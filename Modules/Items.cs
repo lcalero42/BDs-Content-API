@@ -8,12 +8,19 @@ using System.Linq;
 
 namespace DbsContentApi.Modules;
 
+public class CustomShopItemCategory
+{
+    public byte index;
+    public string name;
+}
+
 /// <summary>
 /// API for creating and registering custom items in Content Warning.
 /// Provides simplified methods for item setup, configuration, and registration.
 /// </summary>
 public static class Items
 {
+    public static List<CustomShopItemCategory> customCategories = new List<CustomShopItemCategory>();
     /// <summary>
     /// Loads a prefab from the provided AssetBundle.
     /// </summary>
@@ -31,6 +38,13 @@ public static class Items
             throw new Exception($"{prefabName} not found in AssetBundle");
 
         return prefab;
+    }
+
+    public static byte RegisterCustomCategory(string categoryName)
+    {
+        byte index = (byte)(customCategories.Count + 20);
+        customCategories.Add(new CustomShopItemCategory() { index = index, name = categoryName });
+        return index;
     }
 
     /// <summary>

@@ -17,6 +17,8 @@ public class DbsContentApiPlugin : BaseUnityPlugin
     /// Global list of registered custom monsters.
     /// </summary>
     public static List<GameObject> customMonsters = new List<GameObject>();
+    // public const ShopItemCategory WeaponsCategory = (ShopItemCategory)8;
+
     public static List<Action> customItemsRegistrationCallbacks = new List<Action>();
     public static List<ContentEvent> customContentEvents = new List<ContentEvent>();
 
@@ -40,7 +42,8 @@ public class DbsContentApiPlugin : BaseUnityPlugin
         Modules.Logger.Log("DbsContentApi API Loaded successfully!");
     }
 
-    internal static void Patch() {
+    internal static void Patch()
+    {
         Harmony ??= new Harmony("db.contentapi");
 
         Modules.Logger.Log("Patching...");
@@ -50,7 +53,8 @@ public class DbsContentApiPlugin : BaseUnityPlugin
         Modules.Logger.Log("Finished patching!");
     }
 
-    internal static void Unpatch() {
+    internal static void Unpatch()
+    {
         Modules.Logger.Log("Unpatching...");
 
         Harmony?.UnpatchSelf();
@@ -58,7 +62,8 @@ public class DbsContentApiPlugin : BaseUnityPlugin
         Modules.Logger.Log("Finished unpatching!");
     }
 
-    public static void SetModdedMobsOnly(bool value) {
+    public static void SetModdedMobsOnly(bool value)
+    {
         moddedMobsOnly = value;
     }
 }

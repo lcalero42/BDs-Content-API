@@ -4,7 +4,7 @@ $sourceFolder = $config.SourceFolder
 $destinationZip = $config.DestinationZip
 $buildDllPath = $config.BuildDllPath
 
-dotnet build
+dotnet build -c Release
 
 # Check if source exists
 if (!(Test-Path $sourceFolder)) { 
