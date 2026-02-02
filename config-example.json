@@ -1,0 +1,8 @@
+{
+  "__comment": "This is the path to the build-metadata folder that contains the manifest.json file. It will be zipped",
+  "SourceFolder": "C:/path/to/build-metadata",
+  "__comment": "This is the path to the zip file that will be created.",
+  "DestinationZip": "C:/path/to/DbsContentApi.zip",
+  "__comment": "This is the path to the build dll that will be copied to the mod build.",
+  "BuildDllPath": "C:/path/to/DbsContentApi.dll"
+}
