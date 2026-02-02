@@ -13,11 +13,14 @@ namespace DbsContentApi.Patches;
 [HarmonyPatch(typeof(ShopViewScreen))]
 public static class ShopViewScreenPatch
 {
-
-	[HarmonyPatch("Awake"), HarmonyPostfix]
-	static void AwakePatch(ShopViewScreen __instance)
-	{
-		Modules.Logger.Log("RegisterItemsPatch: Registering custom items.");
-		DbsContentApi.DbsContentApiPlugin.customItemsRegistrationCallbacks.ForEach(callback => callback());
-	}
+    public static bool isRegistered = false;
+    [HarmonyPatch("Awake"), HarmonyPostfix]
+    static void AwakePatch(ShopViewScreen __instance)
+    {
+        if (isRegistered)
+            return;
+        isRegistered = true;
+        Modules.Logger.Log("RegisterItemsPatch: Registering custom items.");
+        DbsContentApi.DbsContentApiPlugin.customItemsRegistrationCallbacks.ForEach(callback => callback());
+    }
 }
