@@ -7,8 +7,8 @@ using System;
 
 namespace DbsContentApi;
 
-[ContentWarningPlugin("db.contentapi", "1.0.0", false)]
-[BepInPlugin("db.contentapi", "Db's content API", "1.0.0")]
+[ContentWarningPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_VERSION, MyPluginInfo.VANILLA_COMPATIBLE)]
+[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 public class DbsContentApiPlugin : BaseUnityPlugin
 {
     internal static Harmony? Harmony { get; set; }
