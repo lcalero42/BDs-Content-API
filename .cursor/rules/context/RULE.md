@@ -47,12 +47,6 @@ Use the central Log, LogError and LogWarning functions defined in the mod root.
 - `DbsContentApi.cs`: The main plugin class inheriting from `BaseUnityPlugin`.
 - Uses `[BepInPlugin]` and `[ContentWarningPlugin]` attributes.
 
-### ContentLib (Internal Mod Modules)
-The project includes a set of helper modules under `Modules/` (often referred to as ContentLib):
-- **`BundleHelper.cs`**: Utilities for loading Unity AssetBundles (embedded or from disk).
-- **`ContentLoader.cs`**: Handles Photon prefab registration and Harmony patches for `RoundSpawner` to inject custom content.
-- **`Monsters.cs`**: Provides `RegisterMonster` to add custom bot prefabs to the game's spawning pool.
-
 ### Patching Patterns
 - **Harmony**: Used extensively to hook into game methods.
 - **Prefix/Postfix**: Standard Harmony patterns for modifying behavior before or after game methods execution.

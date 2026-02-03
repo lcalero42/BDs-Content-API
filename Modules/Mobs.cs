@@ -261,7 +261,7 @@ public class Mobs
         var budget = monster.AddComponent<BudgetCost>();
         budget.budgetCost = config.budgetCost;
         budget.rarity = config.rarity;
-        Logger.Log($"    Budget configured: cost={config.budgetCost}, rarity={config.rarity}");
+        Logger.Log($"Budget configured: cost={config.budgetCost}, rarity={config.rarity}");
     }
 
     private static void SetupController(GameObject monster, ControllerConfig config)
@@ -276,13 +276,13 @@ public class Mobs
         pc.jumpImpulse = config.jumpImpulse;
         pc.jumpForceOverTime = config.jumpForceOverTime;
         pc.constantGravity = config.constantGravity;
-        Logger.Log($"    Controller configured: movementForce={config.movementForce}, maxStamina={config.maxStamina}");
+        Logger.Log($"Controller configured: movementForce={config.movementForce}, maxStamina={config.maxStamina}");
     }
 
     private static void SetupAnimRefHandler(GameObject monster)
     {
         monster.AddComponent<PlayerAnimRefHandler>();
-        Logger.Log($"    AnimRefHandler component added");
+        Logger.Log($"AnimRefHandler component added");
     }
 
     private static void SetupPlayer(GameObject monster, PlayerConfig config)
@@ -293,7 +293,7 @@ public class Mobs
         player.data = new Player.PlayerData();
         player.data.targetHeight = config.targetHeight;
         player.refs = new Player.PlayerRefs();
-        Logger.Log($"    Player configured: targetHeight={config.targetHeight}, ai={player.ai}");
+        Logger.Log($"Player configured: targetHeight={config.targetHeight}, ai={player.ai}");
     }
 
     private static void SetupRagdoll(GameObject monster, RagdollConfig config)
@@ -304,14 +304,14 @@ public class Mobs
         pr.torque = config.torque;
         pr.drag = config.drag;
         pr.angularDrag = config.angularDrag;
-        Logger.Log($"    Ragdoll configured: force={config.force}, torque={config.torque}, drag={config.drag}");
+        Logger.Log($"Ragdoll configured: force={config.force}, torque={config.torque}, drag={config.drag}");
     }
 
     private static void SetupMonsterSyncer(GameObject monster)
     {
         var ms = monster.AddComponent<MonsterSyncer>();
         ms.applyData = true;
-        Logger.Log($"    MonsterSyncer component added (applyData={ms.applyData})");
+        Logger.Log($"MonsterSyncer component added (applyData={ms.applyData})");
     }
 
     /// <summary>
@@ -337,37 +337,37 @@ public class Mobs
         RigCreator? existingRigCreator = rigCreatorTransform?.GetComponent<RigCreator>();
         bool rigAlreadyCreated = rigCreatorTransform?.Find("Rig") != null;
 
-        Logger.Log($"    Visual/Rig status: PlayerVisual={(existingPlayerVisual != null ? "exists" : "missing")}, " +
+        Logger.Log($"Visual/Rig status: PlayerVisual={(existingPlayerVisual != null ? "exists" : "missing")}, " +
                    $"RigCreator={(existingRigCreator != null ? "exists" : "missing")}, " +
                    $"Rig={(rigAlreadyCreated ? "created" : "not created")}");
 
         // Scenario 1: Both exist and rig is already created
         if (existingPlayerVisual != null && existingRigCreator != null && rigAlreadyCreated)
         {
-            Logger.Log($"    Scenario 1: Both PlayerVisual and RigCreator are fully configured, nothing to do");
+            Logger.Log($"Scenario 1: Both PlayerVisual and RigCreator are fully configured, nothing to do");
             return;
         }
 
         // Scenario 2: RigCreator exists (and possibly rig is created) but PlayerVisual is missing
         if (existingRigCreator != null && existingPlayerVisual == null)
         {
-            Logger.Log($"    Scenario 2: RigCreator exists but PlayerVisual missing, adding PlayerVisual");
+            Logger.Log($"Scenario 2: RigCreator exists but PlayerVisual missing, adding PlayerVisual");
             var playerVisual = visualTransform.gameObject.AddComponent<PlayerVisual>();
 
             // If rig is already created, call SetTargets now
             if (rigAlreadyCreated)
             {
-                Logger.Log($"    Rig already created, calling SetTargets on PlayerVisual");
+                Logger.Log($"Rig already created, calling SetTargets on PlayerVisual");
                 playerVisual.SetTargets();
             }
             else
             {
                 // If rig not created yet, we need to create it and wire up the event
-                Logger.Log($"    Rig not created yet, will call SetTargets after rig creation");
+                Logger.Log($"Rig not created yet, will call SetTargets after rig creation");
                 existingRigCreator.createRigEvent = existingRigCreator.createRigEvent ?? new UnityEngine.Events.UnityEvent();
                 existingRigCreator.createRigEvent.AddListener(() => VisualSetTargets(monster));
 
-                Logger.Log($"    Creating rig for existing RigCreator");
+                Logger.Log($"Creating rig for existing RigCreator");
                 CustomCreateRig(existingRigCreator);
             }
             return;
@@ -377,12 +377,12 @@ public class Mobs
         // If PlayerVisual doesn't exist, create it
         if (existingPlayerVisual == null)
         {
-            Logger.Log($"    Scenario 4: Neither PlayerVisual nor RigCreator exist, creating both");
+            Logger.Log($"Scenario 4: Neither PlayerVisual nor RigCreator exist, creating both");
             visualTransform.gameObject.AddComponent<PlayerVisual>();
         }
         else
         {
-            Logger.Log($"    Scenario 3: PlayerVisual exists but RigCreator missing, creating RigCreator");
+            Logger.Log($"Scenario 3: PlayerVisual exists but RigCreator missing, creating RigCreator");
         }
 
         // Now create and configure RigCreator
@@ -391,7 +391,7 @@ public class Mobs
             throw new System.Exception($"bodyparts configuration is required when RigCreator doesn't exist on the prefab for {monsterName}");
         }
 
-        Logger.Log($"    Creating RigCreator GameObject with {config.bodyparts.Count} bodyparts");
+        Logger.Log($"Creating RigCreator GameObject with {config.bodyparts.Count} bodyparts");
         var rigCreatorObject = new GameObject("RigCreator");
         rigCreatorObject.transform.SetParent(monster.transform);
         rigCreatorObject.transform.localPosition = Vector3.zero;
@@ -400,13 +400,13 @@ public class Mobs
 
         // Configure RigCreator
         rigCreator.source = visualTransform.gameObject;
-        Logger.Log($"    RigCreator source set to Visual GameObject");
+        Logger.Log($"RigCreator source set to Visual GameObject");
 
-        Logger.Log($"    Setting up RigCreator resources");
+        Logger.Log($"Setting up RigCreator resources");
         SetupRigCreatorResources(rigCreator);
 
         // Apply configuration
-        Logger.Log($"    Applying RigCreator configuration");
+        Logger.Log($"Applying RigCreator configuration");
         rigCreator.useGravity = config.useGravity;
         rigCreator.massMultiplier = config.massMultiplier;
         rigCreator.useTargetRotation = config.useTargetRotation;
@@ -420,9 +420,9 @@ public class Mobs
         rigCreator.createRigEvent = new UnityEngine.Events.UnityEvent();
         rigCreator.createRigEvent.AddListener(() => VisualSetTargets(monster));
 
-        Logger.Log($"    Creating rig for {monsterName}");
+        Logger.Log($"Creating rig for {monsterName}");
         CustomCreateRig(rigCreator);
-        Logger.Log($"    Rig creation completed for {monsterName}");
+        Logger.Log($"Rig creation completed for {monsterName}");
     }
 
     private static void VisualSetTargets(GameObject monster)
@@ -434,16 +434,16 @@ public class Mobs
             if (playerVisual != null)
             {
                 playerVisual.SetTargets();
-                Logger.Log($"    Visual targets set successfully");
+                Logger.Log($"Visual targets set successfully");
             }
             else
             {
-                Logger.LogWarning($"    PlayerVisual component not found on Visual for {monster.name}");
+                Logger.LogWarning($"PlayerVisual component not found on Visual for {monster.name}");
             }
         }
         else
         {
-            Logger.LogWarning($"    Visual GameObject not found for {monster.name}");
+            Logger.LogWarning($"Visual GameObject not found for {monster.name}");
         }
     }
 
@@ -457,16 +457,16 @@ public class Mobs
             if (ms != null)
             {
                 pv.ObservedComponents = new List<Component> { ms };
-                Logger.Log($"    PhotonView configured: synchronization={config.synchronization}, observing MonsterSyncer");
+                Logger.Log($"PhotonView configured: synchronization={config.synchronization}, observing MonsterSyncer");
             }
             else
             {
-                Logger.LogWarning($"    MonsterSyncer not found for PhotonView observation on {monster.name}");
+                Logger.LogWarning($"MonsterSyncer not found for PhotonView observation on {monster.name}");
             }
         }
         else
         {
-            Logger.Log($"    PhotonView configured: synchronization={config.synchronization}");
+            Logger.Log($"PhotonView configured: synchronization={config.synchronization}");
         }
         pv.observableSearch = PhotonView.ObservableSearch.AutoFindAll;
     }
@@ -477,11 +477,11 @@ public class Mobs
         if (headObj != null)
         {
             headObj.AddComponent<HeadFollower>();
-            Logger.Log($"    HeadFollower component added to HeadPosition");
+            Logger.Log($"HeadFollower component added to HeadPosition");
         }
         else
         {
-            Logger.LogWarning($"    HeadPosition not found for {monster.name}");
+            Logger.LogWarning($"HeadPosition not found for {monster.name}");
         }
     }
 
@@ -491,34 +491,34 @@ public class Mobs
         if (groundObj != null)
         {
             groundObj.AddComponent<PlayerGroundPositionTransform>();
-            Logger.Log($"    PlayerGroundPositionTransform component added to PlayerGroundPos");
+            Logger.Log($"PlayerGroundPositionTransform component added to PlayerGroundPos");
         }
         else
         {
-            Logger.LogWarning($"    PlayerGroundPos not found for {monster.name}");
+            Logger.LogWarning($"PlayerGroundPos not found for {monster.name}");
         }
     }
 
     private static void SetupMonsterAnimationHandler(GameObject monster)
     {
         monster.AddComponent<MonsterAnimationHandler>();
-        Logger.Log($"    MonsterAnimationHandler component added");
+        Logger.Log($"MonsterAnimationHandler component added");
     }
 
     private static void SetupBot(GameObject monster, BotConfig botConfig, NavMeshConfig? navConfig)
     {
-        Logger.Log($"    Creating Bot GameObject 'Bot_{botConfig.monsterName}' for {botConfig.monsterName}");
+        Logger.Log($"Creating Bot GameObject 'Bot_{botConfig.monsterName}' for {botConfig.monsterName}");
         var botObject = new GameObject($"Bot_{botConfig.monsterName}");
         botObject.transform.SetParent(monster.transform);
         botObject.transform.localPosition = Vector3.zero;
         botObject.transform.localRotation = Quaternion.identity;
 
-        Logger.Log($"    Adding PhotonView to Bot for {botConfig.monsterName}");
+        Logger.Log($"Adding PhotonView to Bot for {botConfig.monsterName}");
         var pv = botObject.AddComponent<PhotonView>();
         pv.Synchronization = ViewSynchronization.UnreliableOnChange;
         pv.observableSearch = PhotonView.ObservableSearch.AutoFindAll;
 
-        Logger.Log($"    Configuring Bot component: patrolGroups={botConfig.patrolGroups.Count}, attackType={botConfig.attackType}, alertable={botConfig.alertable}");
+        Logger.Log($"Configuring Bot component: patrolGroups={botConfig.patrolGroups.Count}, attackType={botConfig.attackType}, alertable={botConfig.alertable}");
         var bot = botObject.AddComponent<Bot>();
         bot.patrolGroups = botConfig.patrolGroups;
         bot.attackType = botConfig.attackType;
@@ -532,16 +532,16 @@ public class Mobs
         bot.syncData = new Bot.SyncData { targetPlayerId = -1 };
         if (hip != null)
         {
-            Logger.Log($"    Bot centerTransform set to Hip");
+            Logger.Log($"Bot centerTransform set to Hip");
         }
         else
         {
-            Logger.LogWarning($"    Hip transform not found for Bot centerTransform on {botConfig.monsterName}");
+            Logger.LogWarning($"Hip transform not found for Bot centerTransform on {botConfig.monsterName}");
         }
 
         if (navConfig != null)
         {
-            Logger.Log($"    Configuring NavMeshAgent: speed={navConfig.speed}, angularSpeed={navConfig.angularSpeed}, radius={navConfig.radius}, height={navConfig.height}");
+            Logger.Log($"Configuring NavMeshAgent: speed={navConfig.speed}, angularSpeed={navConfig.angularSpeed}, radius={navConfig.radius}, height={navConfig.height}");
             var nav = botObject.AddComponent<NavMeshAgent>();
             nav.speed = navConfig.speed;
             nav.acceleration = navConfig.acceleration;
@@ -553,13 +553,13 @@ public class Mobs
         }
         else
         {
-            Logger.Log($"    No NavMeshConfig provided, skipping NavMeshAgent setup");
+            Logger.Log($"No NavMeshConfig provided, skipping NavMeshAgent setup");
         }
 
-        Logger.Log($"    Adding Bot_Nav_Navmesh and Bot_RagdollCharacter components");
+        Logger.Log($"Adding Bot_Nav_Navmesh and Bot_RagdollCharacter components");
         botObject.AddComponent<Bot_Nav_Navmesh>();
         botObject.AddComponent<Bot_RagdollCharacter>();
-        Logger.Log($"    Bot setup completed for {botConfig.monsterName}");
+        Logger.Log($"Bot setup completed for {botConfig.monsterName}");
     }
 
     public static void AddBotZombieComponent(GameObject botObject)
@@ -624,21 +624,21 @@ public class Mobs
             if (rc.boxColldier != null && rc.capsuleCol != null && rc.slipperyMat != null)
             {
                 template = rc;
-                Logger.Log($"      Found RigCreator template from existing instance");
+                Logger.Log($"  Found RigCreator template from existing instance");
                 break;
             }
         }
 
         if (template == null)
         {
-            Logger.Log($"      Searching for Zombe prefab as RigCreator template");
+            Logger.Log($"  Searching for Zombe prefab as RigCreator template");
             var zombePrefab = Resources.Load<GameObject>("Zombe");
             if (zombePrefab != null)
             {
                 template = zombePrefab.GetComponentInChildren<RigCreator>(true);
                 if (template != null)
                 {
-                    Logger.Log($"      Found RigCreator template from Zombe prefab");
+                    Logger.Log($"  Found RigCreator template from Zombe prefab");
                 }
             }
         }
@@ -649,24 +649,24 @@ public class Mobs
             rigCreator.capsuleCol = template.capsuleCol;
             rigCreator.sphereCol = template.sphereCol;
             rigCreator.slipperyMat = template.slipperyMat;
-            Logger.Log($"      RigCreator resources copied from template");
+            Logger.Log($"  RigCreator resources copied from template");
         }
         else if (rigCreator.slipperyMat == null)
         {
-            Logger.Log($"      Searching for slippery PhysicMaterial");
+            Logger.Log($"  Searching for slippery PhysicMaterial");
             foreach (var mat in Resources.FindObjectsOfTypeAll<PhysicMaterial>())
             {
                 if (mat.name.ToLower().Contains("slippery"))
                 {
                     rigCreator.slipperyMat = mat;
-                    Logger.Log($"      Found slippery PhysicMaterial: {mat.name}");
+                    Logger.Log($"  Found slippery PhysicMaterial: {mat.name}");
                     break;
                 }
             }
         }
         else
         {
-            Logger.LogWarning($"      No RigCreator template found and no slippery material available");
+            Logger.LogWarning($"  No RigCreator template found and no slippery material available");
         }
     }
 
@@ -677,24 +677,24 @@ public class Mobs
     /// </summary>
     private static void CustomCreateRig(RigCreator rigCreator)
     {
-        Logger.Log($"      SmartFillLegs()");
+        Logger.Log($"  SmartFillLegs()");
         rigCreator.SmartFillLegs();
         Transform transform = rigCreator.gameObject.transform.Find("Rig");
         if (transform)
         {
-            Logger.Log($"      Destroying existing Rig GameObject");
+            Logger.Log($"  Destroying existing Rig GameObject");
             UnityEngine.Object.DestroyImmediate(transform.gameObject);
         }
-        Logger.Log($"      Instantiating rig source");
+        Logger.Log($"  Instantiating rig source");
         GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(rigCreator.source, rigCreator.gameObject.transform.position, rigCreator.gameObject.transform.rotation, rigCreator.gameObject.transform);
         gameObject.SetActive(true);
         gameObject.name = "Rig";
-        Logger.Log($"      Clearing mesh and registering parts");
+        Logger.Log($"  Clearing mesh and registering parts");
         rigCreator.ClearMesh(gameObject);
         rigCreator.RegisterParts();
-        Logger.Log($"      Configuring rotations");
+        Logger.Log($"  Configuring rotations");
         rigCreator.ConfigRotations();
-        Logger.Log($"      Adding rigs");
+        Logger.Log($"  Adding rigs");
         rigCreator.AddRigs();
         int jointsCreated = 0;
         for (int i = 0; i < rigCreator.bodyparts.Count; i++)
@@ -706,11 +706,11 @@ public class Mobs
                 jointsCreated++;
             }
         }
-        Logger.Log($"      Created {jointsCreated} joints for {rigCreator.bodyparts.Count} bodyparts");
-        Logger.Log($"      Adding collision and scripts");
+        Logger.Log($"  Created {jointsCreated} joints for {rigCreator.bodyparts.Count} bodyparts");
+        Logger.Log($"  Adding collision and scripts");
         rigCreator.AddCollision();
         rigCreator.AddScripts();
-        Logger.Log($"      Invoking createRigEvent");
+        Logger.Log($"  Invoking createRigEvent");
         rigCreator.createRigEvent.Invoke();
     }
 

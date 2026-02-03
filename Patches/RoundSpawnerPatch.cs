@@ -44,6 +44,7 @@ public static class RoundSpawnerPatch
         if (DbsContentApiPlugin.moddedMobsOnly)
         {
             possibleSpawnsField.Value = DbsContentApiPlugin.customMonsters.ToArray();
+            Logger.Log("RoundSpawnerPatch: Modded mobs only: " + possibleSpawnsField.Value.Length);
         }
         else
         {
