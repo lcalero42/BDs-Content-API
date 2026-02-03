@@ -26,6 +26,7 @@ public class DbsContentApiPlugin : BaseUnityPlugin
     /// If true, only modded monsters will spawn in the round.
     /// </summary>
     public static bool moddedMobsOnly = false;
+    public static bool allItemsFree = false;
 
     private void Awake()
     {
@@ -65,5 +66,9 @@ public class DbsContentApiPlugin : BaseUnityPlugin
     public static void SetModdedMobsOnly(bool value)
     {
         moddedMobsOnly = value;
+    }
+    public static void SetAllItemsFree(bool value)
+    {
+        allItemsFree = value;
     }
 }
