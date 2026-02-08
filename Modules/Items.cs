@@ -383,7 +383,7 @@ public static class Items
     /// <param name="matName">Name of the material to apply (default: M_Metal).</param>
     /// <param name="holdPos">Optional holding position of the item (default: (0.3, -0.3, 0.7)).</param>
     /// <param name="customBehaviourSetup">Optional callback to add custom behaviours to the prefab.</param>
-	public static void RegisterItem(
+	public static Item RegisterItem(
         AssetBundle bundle,
         string prefabName,
         string displayName,
@@ -412,5 +412,7 @@ public static class Items
 
         if (!CheckDuplicateItem(item))
             AddItemToDatabase(item);
+
+        return item;
     }
 }
