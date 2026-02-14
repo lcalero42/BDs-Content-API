@@ -12,6 +12,7 @@ public static class ShopViewScreenPatch
 		if (isRegistered)
 			return;
 		isRegistered = true;
+
 		Modules.Logger.Log("RegisterItemsPatch: Registering custom items.");
 		DbsContentApiPlugin.customItemsRegistrationCallbacks.ForEach(callback => callback());
 

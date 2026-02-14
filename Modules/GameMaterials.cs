@@ -102,79 +102,79 @@ public enum GameMaterialType
     /// <summary>A variation of the white cinema screen material.</summary>
     M_Cinema_2,
     /// <summary>A standard gray green screen material.</summary>
-    M_GreenScreen_1,
+    FLAT_GRAY,
     /// <summary>Unremarkable and/or undocumented material.</summary>
     M_GreenScreen_2,
     /// <summary>A material featuring a lunar surface texture.</summary>
     M_GreenScreen_3,
-    /// <summary>A gray material with lighter gray spots used for balaclavas.</summary>
-    M_Balaclava,
+    /// <summary>A dark gray material with lighter gray spots used for balaclavas.</summary>
+    VERY_DARK_GRAY,
     /// <summary>A soft violet/magenta material with discrete white strips for beanies.</summary>
     M_Beanie_1,
     /// <summary>An opaque blue-gray material with a water-like appearance.</summary>
-    M_Bucket_1,
+    GRAY_BLUE,
     /// <summary>A white material with lighter white spots for caps.</summary>
     M_Cap_1,
     /// <summary>A white material with lighter white spots for chef hats.</summary>
     M_Chef_1,
     /// <summary>A sky blue material with small white spots and an icy look.</summary>
-    M_Child_1,
+    SKYBLUE,
     /// <summary>A green material with small white spots.</summary>
-    M_Child_2,
+    GREEN,
     /// <summary>A yellow material with small white spots.</summary>
-    M_Child_3,
+    YELLOW,
     /// <summary>A red material with small white spots.</summary>
-    M_Child_4,
+    RED,
     /// <summary>A white material with small white spots.</summary>
-    M_Child_5,
+    WHITE,
     /// <summary>A red material with small white spots for clown hats.</summary>
-    M_Clown_1,
+    RED2,
     /// <summary>A beige material with small white spots for clown hats.</summary>
-    M_Clown_2,
+    BEIGE,
     /// <summary>A brown material with small white spots for cowboy hats.</summary>
-    M_Cowboy,
+    BROWN,
     /// <summary>A gold material with small white spots for crowns.</summary>
-    M_Crown,
+    GOLD,
     /// <summary>A dark gray material with small white spots.</summary>
-    M_Ears_1,
+    DARKGRAY2,
     /// <summary>A pink/magenta material with small white spots.</summary>
-    M_Ears_2,
+    MAGENTA,
     /// <summary>A variation of dark gray material with small white spots.</summary>
-    M_Ears_3,
+    DARKGRAY3,
     /// <summary>A simple beige material.</summary>
-    M_Floppy_1,
+    BEIGE2,
     /// <summary>A brown/gray material with small white spots.</summary>
-    M_Foodora,
+    BROWN2,
     /// <summary>A brown material with small white spots for hair.</summary>
-    M_Hair_1,
+    BROWN3,
     /// <summary>A gold material used for halos.</summary>
-    M_Halo,
+    GOLD2,
     /// <summary>A white material with small white spots used for horns.</summary>
     M_Horn,
     /// <summary>An ivory white material with small white spots.</summary>
-    M_Hotdog_1,
+    WHITE_IVORY,
     /// <summary>An orange material with small white spots.</summary>
-    M_Hotdog_2,
+    ORANGE_SAUSAGE,
     /// <summary>A red material with small white spots.</summary>
-    M_Hotdog_3,
+    RED3,
     /// <summary>A yellow-beige material.</summary>
-    M_Hotdog_4,
+    YELLOW_BEIGE,
     /// <summary>A yellow material with small white spots for jester hats.</summary>
-    M_Jester_1,
+    YELLOW2,
     /// <summary>A violet/magenta material with small white spots for jester hats.</summary>
-    M_Jester_2,
+    VIOLET,
     /// <summary>A green material with small white spots for jester hats.</summary>
-    M_Jester_3,
+    GREEN2,
     /// <summary>A yellow/orange material with small white spots for jester hats.</summary>
-    M_Jester_4,
+    YELLOW_ORANGE,
     /// <summary>A bright white drape-like material with whiter spotting.</summary>
     M_Knifo,
     /// <summary>A dark gray material with small white spots.</summary>
-    M_Milk1,
+    M_DARKGRAY,
     /// <summary>A white material with small white spots.</summary>
     M_Milk2,
     /// <summary>A gray material with small white spots.</summary>
-    M_News1,
+    M_PAPER,
     /// <summary>Unremarkable and/or undocumented material.</summary>
     M_News2,
     /// <summary>A red material decorated with yellow dots.</summary>
@@ -318,14 +318,14 @@ public class GameMaterials
             { "M_HatShop 8", GameMaterialType.M_HatShop_8 },
             { "M_ShopGlass", GameMaterialType.M_ShopGlass },
             { "M_House Glas", GameMaterialType.M_House_Glas },
-            { "M_Balaclava", GameMaterialType.M_Balaclava },
+            { "M_Balaclava", GameMaterialType.VERY_DARK_GRAY },
             { "M_Beanie 1", GameMaterialType.M_Beanie_1 },
-            { "M_Bucket 1", GameMaterialType.M_Bucket_1 },
+            { "M_Bucket 1", GameMaterialType.GRAY_BLUE },
             { "M_Chef 1", GameMaterialType.M_Chef_1 },
-            { "M_Floppy 1", GameMaterialType.M_Floppy_1 },
+            { "M_Floppy 1", GameMaterialType.BEIGE2 },
             { "M_PlayerHatColor", GameMaterialType.M_PlayerHatColor },
-            { "M_Foodora", GameMaterialType.M_Foodora },
-            { "M_Hair 1", GameMaterialType.M_Hair_1 },
+            { "M_Foodora", GameMaterialType.BROWN2 },
+            { "M_Hair 1", GameMaterialType.BROWN3 },
             { "M_Party 1", GameMaterialType.M_Party_1 },
             { "M_Party 2", GameMaterialType.M_Party_2 },
             { "M_Shroom 1", GameMaterialType.M_Shroom_1 },
@@ -334,20 +334,20 @@ public class GameMaterials
             { "M_Ushanka 2", GameMaterialType.M_Ushanka_2 },
             { "M_Witch", GameMaterialType.M_Witch },
             { "M_Bowler", GameMaterialType.M_Bowler },
-            { "M_Cowboy", GameMaterialType.M_Cowboy },
-            { "M_Crown", GameMaterialType.M_Crown },
+            { "M_Cowboy", GameMaterialType.BROWN },
+            { "M_Crown", GameMaterialType.GOLD },
             { "M_Knifo", GameMaterialType.M_Knifo },
-            { "M_Milk1", GameMaterialType.M_Milk1 },
+            { "M_Milk1", GameMaterialType.M_DARKGRAY },
             { "M_Milk2", GameMaterialType.M_Milk2 },
-            { "M_News1", GameMaterialType.M_News1 },
+            { "M_News1", GameMaterialType.M_PAPER },
             { "M_News2", GameMaterialType.M_News2 },
             { "M_Top", GameMaterialType.M_Top },
-            { "M_Halo", GameMaterialType.M_Halo },
+            { "M_Halo", GameMaterialType.GOLD2 },
             { "M_Horn", GameMaterialType.M_Horn },
             { "M_Laser", GameMaterialType.M_Laser },
-            { "M_Ears 1", GameMaterialType.M_Ears_1 },
-            { "M_Ears 2", GameMaterialType.M_Ears_2 },
-            { "M_Ears 3", GameMaterialType.M_Ears_3 },
+            { "M_Ears 1", GameMaterialType.DARKGRAY2 },
+            { "M_Ears 2", GameMaterialType.MAGENTA },
+            { "M_Ears 3", GameMaterialType.DARKGRAY3 },
             { "M_Rug 1", GameMaterialType.M_Rug_1 },
             { "M_Rug 3", GameMaterialType.M_Rug_3 },
             { "M_Rug 4", GameMaterialType.M_Rug_4 },
@@ -355,11 +355,11 @@ public class GameMaterials
             { "M_Rug 6", GameMaterialType.M_Rug_6 },
             { "AkzidenzGroteskPro-Bold SDF Material", GameMaterialType.AkzidenzGroteskPro_Bold_SDF },
             { "AkzidenzGroteskPro-Light SDF Material", GameMaterialType.AkzidenzGroteskPro_Light_SDF },
-            { "M_Child 1", GameMaterialType.M_Child_1 }, { "M_Child 2", GameMaterialType.M_Child_2 }, { "M_Child 3", GameMaterialType.M_Child_3 }, { "M_Child 4", GameMaterialType.M_Child_4 }, { "M_Child 5", GameMaterialType.M_Child_5 },
+            { "M_Child 1", GameMaterialType.SKYBLUE }, { "M_Child 2", GameMaterialType.GREEN }, { "M_Child 3", GameMaterialType.YELLOW }, { "M_Child 4", GameMaterialType.RED }, { "M_Child 5", GameMaterialType.WHITE },
             { "M_Pirate 1", GameMaterialType.M_Pirate_1 }, { "M_Pirate 2", GameMaterialType.M_Pirate_2 }, { "M_Pirate 3", GameMaterialType.M_Pirate_3 },
-            { "M_Jester 1", GameMaterialType.M_Jester_1 }, { "M_Jester 2", GameMaterialType.M_Jester_2 }, { "M_Jester 3", GameMaterialType.M_Jester_3 }, { "M_Jester 4", GameMaterialType.M_Jester_4 },
-            { "M_Clown 1", GameMaterialType.M_Clown_1 }, { "M_Clown 2", GameMaterialType.M_Clown_2 },
-            { "M_Hotdog 1", GameMaterialType.M_Hotdog_1 }, { "M_Hotdog 2", GameMaterialType.M_Hotdog_2 }, { "M_Hotdog 3", GameMaterialType.M_Hotdog_3 }, { "M_Hotdog 4", GameMaterialType.M_Hotdog_4 },
+            { "M_Jester 1", GameMaterialType.YELLOW2 }, { "M_Jester 2", GameMaterialType.VIOLET }, { "M_Jester 3", GameMaterialType.GREEN2 }, { "M_Jester 4", GameMaterialType.YELLOW_ORANGE },
+            { "M_Clown 1", GameMaterialType.RED2 }, { "M_Clown 2", GameMaterialType.BEIGE },
+            { "M_Hotdog 1", GameMaterialType.WHITE_IVORY }, { "M_Hotdog 2", GameMaterialType.ORANGE_SAUSAGE }, { "M_Hotdog 3", GameMaterialType.RED3 }, { "M_Hotdog 4", GameMaterialType.YELLOW_BEIGE },
             { "M_Rugby 1", GameMaterialType.M_Rugby_1 }, { "M_Rugby 2", GameMaterialType.M_Rugby_2 }, { "M_Rugby 3", GameMaterialType.M_Rugby_3 },
             { "M_Copyright", GameMaterialType.M_Copyright }, { "M_Copyright 1", GameMaterialType.M_Copyright_1 },
             { "M_Cap 1", GameMaterialType.M_Cap_1 },
@@ -382,7 +382,7 @@ public class GameMaterials
             { "M_Projector 3", GameMaterialType.M_Projector_3 },
             { "M_Projector 4", GameMaterialType.M_Projector_4 },
             { "M_Projector 5", GameMaterialType.M_Projector_5 },
-            { "M_GreenScreen 1", GameMaterialType.M_GreenScreen_1 },
+            { "M_GreenScreen 1", GameMaterialType.FLAT_GRAY },
             { "M_GreenScreen 2", GameMaterialType.M_GreenScreen_2 },
             { "M_GreenScreen 3", GameMaterialType.M_GreenScreen_3 }
         }},

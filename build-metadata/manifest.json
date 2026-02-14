@@ -1,6 +1,6 @@
 {
     "name": "DBs_Content_API",
-    "version_number": "1.0.1",
+    "version_number": "1.1.0",
     "description": "Just a boring content API for modders",
     "dependencies": [
         "BepInEx-BepInExPack-5.4.2100"

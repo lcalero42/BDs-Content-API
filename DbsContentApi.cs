@@ -37,6 +37,8 @@ public class DbsContentApiPlugin : BaseUnityPlugin
         Patch();
 
         GameMaterials.InitMaterials();
+        ImpactSoundScanner.InitImpactSounds();
+
 
         Modules.Logger.Init(base.Logger);
 

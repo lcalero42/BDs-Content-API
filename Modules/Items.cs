@@ -21,25 +21,6 @@ public class CustomShopItemCategory
 public static class Items
 {
     public static List<CustomShopItemCategory> customCategories = new List<CustomShopItemCategory>();
-    /// <summary>
-    /// Loads a prefab from the provided AssetBundle.
-    /// </summary>
-    /// <param name="bundle">The AssetBundle containing the prefab.</param>
-    /// <param name="prefabName">The name of the prefab to load.</param>
-    /// <returns>The loaded GameObject prefab.</returns>
-    /// <exception cref="Exception">Thrown if bundle is null or prefab not found.</exception>
-    public static GameObject LoadPrefab(AssetBundle bundle, string prefabName)
-    {
-        if (bundle == null)
-            throw new Exception("AssetBundle is null");
-
-        GameObject prefab = bundle.LoadAsset<GameObject>(prefabName);
-        if (prefab == null)
-            throw new Exception($"{prefabName} not found in AssetBundle");
-
-        return prefab;
-    }
-
     public static byte RegisterCustomCategory(string categoryName)
     {
         byte index = (byte)(customCategories.Count + 20);
@@ -48,24 +29,19 @@ public static class Items
     }
 
     /// <summary>
-    /// Sets up a prefab with required components and materials.
+    /// Sets up a prefab with required components.
     /// </summary>
     /// <param name="prefab">The prefab to setup.</param>
-    /// <param name="prefabName">The name of the prefab.</param>
-    /// <param name="matName">Name of the material to apply to the prefab.</param>
-    public static void SetupPrefab(GameObject prefab, string prefabName, GameMaterialType mat)
+    public static void SetupPrefab(GameObject prefab)
     {
-        GameMaterials.ApplyMaterial(prefab, mat);
-
-        EnsureComponents(prefab, prefabName);
+        EnsureComponents(prefab);
     }
 
     /// <summary>
     /// Ensures required components are present on the prefab.
     /// </summary>
     /// <param name="prefab">The prefab to check.</param>
-    /// <param name="prefabName">The name of the prefab.</param>
-    private static void EnsureComponents(GameObject prefab, string prefabName)
+    private static void EnsureComponents(GameObject prefab)
     {
         // Add ItemInstance component if missing
         if (prefab.GetComponent<ItemInstance>() == null)
@@ -116,24 +92,22 @@ public static class Items
     /// Creates and configures a new Item ScriptableObject.
     /// </summary>
     /// <param name="bundle">The AssetBundle containing assets.</param>
-    /// <param name="prefabName">The name of the prefab.</param>
     /// <param name="prefab">The item GameObject prefab.</param>
     /// <param name="price">The price of the item.</param>
     /// <param name="category">The shop category.</param>
     /// <param name="iconName">The name of the icon asset.</param>
-    /// <param name="soundEffectName">The name of the sound effect asset.</param>
+    /// <param name="impactSounds">The impact sounds for the item's PhysicsSound component.</param>
     /// <param name="holdPos">The holding position of the item.</param>
     /// <param name="displayName">The display name of the item.</param>
     /// <returns>The configured Item.</returns>
-    public static Item CreateItem(AssetBundle bundle, string prefabName, GameObject prefab, int price, ShopItemCategory category,
-                                                        string iconName, string soundEffectName, Vector3 holdPos, string displayName)
+    public static Item CreateItem(AssetBundle bundle, GameObject prefab, int price, ShopItemCategory category,
+                                                        string iconName, SFX_Instance[] impactSounds, Vector3 holdPos, Vector3 holdRot, string displayName)
     {
-        ItemDatabase db = SingletonAsset<ItemDatabase>.Instance;
         Item item = ScriptableObject.CreateInstance<Item>();
 
-        SetupPhysicsSound(bundle, prefab, db, soundEffectName);
+        SetupPhysicsSound(prefab, impactSounds);
         SetupIcon(bundle, prefab, item, iconName);
-        SetupItemBasics(item, prefabName, prefab, price, category, holdPos, displayName);
+        SetupItemBasics(item, prefab, price, category, holdPos, holdRot, displayName);
 
         return item;
     }
@@ -155,25 +129,12 @@ public static class Items
     /// <summary>
     /// Sets up physics sound for an item prefab.
     /// </summary>
-    /// <param name="bundle">The AssetBundle containing sound assets.</param>
     /// <param name="prefab">The item prefab.</param>
-    /// <param name="db">The ItemDatabase instance.</param>
-    /// <param name="soundEffectName">The name of the sound effect asset.</param>
-    public static void SetupPhysicsSound(AssetBundle bundle, GameObject prefab, ItemDatabase db, string soundEffectName)
+    /// <param name="impactSounds">The impact sounds to apply.</param>
+    public static void SetupPhysicsSound(GameObject prefab, SFX_Instance[] impactSounds)
     {
         var ps = prefab.AddComponent<PhysicsSound>();
-        AudioClip customImpactSound = bundle.LoadAsset<AudioClip>(soundEffectName);
-
-        if (customImpactSound == null)
-        {
-            Debug.LogWarning("Custom impact sound not found, using fallback");
-            ps.impactSounds = GetFallbackPhysicsSound(db);
-        }
-        else
-        {
-            ps.impactSounds = CreateCustomImpactSound(customImpactSound, db);
-            Debug.Log("Custom impact sound loaded successfully!");
-        }
+        ps.impactSounds = impactSounds;
     }
 
     /// <summary>
@@ -189,13 +150,13 @@ public static class Items
     }
 
     /// <summary>
-    /// Creates a custom impact sound instance.
+    /// Creates a custom impact sound instance from an AudioClip.
     /// </summary>
     /// <param name="customSound">The custom AudioClip.</param>
-    /// <param name="db">The ItemDatabase instance.</param>
     /// <returns>Array containing the custom SFX_Instance.</returns>
-    public static SFX_Instance[] CreateCustomImpactSound(AudioClip customSound, ItemDatabase db)
+    public static SFX_Instance[] CreateSFXInstanceFromClip(AudioClip customSound)
     {
+        ItemDatabase db = SingletonAsset<ItemDatabase>.Instance;
         var objectsField = GetObjectsField(db);
         var currentItems = GetItemsFromField(objectsField, db);
 
@@ -214,16 +175,40 @@ public static class Items
     }
 
     /// <summary>
+    /// Creates a custom impact sound instance from multiple AudioClips.
+    /// </summary>
+    /// <param name="customSounds">The custom AudioClips.</param>
+    /// <returns>Array containing the custom SFX_Instance.</returns>
+    public static SFX_Instance[] CreateImpactSoundFromClips(params AudioClip[] customSounds)
+    {
+        ItemDatabase db = SingletonAsset<ItemDatabase>.Instance;
+        var objectsField = GetObjectsField(db);
+        var currentItems = GetItemsFromField(objectsField, db);
+
+        SFX_Instance templateSFX = currentItems[0].itemObject.GetComponent<PhysicsSound>()?.impactSounds?[0];
+        if (templateSFX == null)
+        {
+            Debug.LogError("Could not find template SFX_Instance");
+            return GetFallbackPhysicsSound(db);
+        }
+
+        SFX_Instance sfxInstance = ScriptableObject.Instantiate(templateSFX);
+        sfxInstance.clips = customSounds;
+        sfxInstance.settings.pitch = 1.0f;
+        sfxInstance.settings.volume = 1.0f;
+        return new SFX_Instance[] { sfxInstance };
+    }
+
+    /// <summary>
     /// Sets up basic item properties.
     /// </summary>
     /// <param name="item">The item to configure.</param>
-    /// <param name="prefabName">The name of the prefab.</param>
     /// <param name="prefab">The item GameObject.</param>
     /// <param name="price">The price of the item.</param>
     /// <param name="category">The shop category.</param>
     /// <param name="holdPos">The holding position of the item.</param>
     /// <param name="displayName">The display name of the item.</param>
-    public static void SetupItemBasics(Item item, string prefabName, GameObject prefab, int price, ShopItemCategory category, Vector3 holdPos, string displayName)
+    public static void SetupItemBasics(Item item, GameObject prefab, int price, ShopItemCategory category, Vector3 holdPos, Vector3 holdRot, string displayName)
     {
         item.displayName = displayName;
         item.itemObject = prefab;
@@ -235,7 +220,7 @@ public static class Items
 
         item.mass = 0.5f;
         item.holdPos = holdPos;
-        item.holdRotation = Vector3.zero;
+        item.holdRotation = holdRot;
         item.useAlternativeHoldingPos = false;
         item.useAlternativeHoldingRot = false;
         item.groundSizeMultiplier = 1f;
@@ -374,41 +359,35 @@ public static class Items
     /// Handles loading, setup, registration, and database addition.
     /// </summary>
     /// <param name="bundle">The AssetBundle containing the item assets.</param>
-    /// <param name="prefabName">The name of the item prefab.</param>
+    /// <param name="prefab">The item GameObject prefab.</param>
     /// <param name="displayName">The display name of the item.</param>
     /// <param name="price">The price of the item.</param>
     /// <param name="category">The shop category.</param>
     /// <param name="iconName">The name of the icon asset.</param>
-    /// <param name="soundEffectName">The name of the sound effect asset.</param>
-    /// <param name="matName">Name of the material to apply (default: M_Metal).</param>
+    /// <param name="impactSounds">The impact sounds for the item's PhysicsSound component.</param>
     /// <param name="holdPos">Optional holding position of the item (default: (0.3, -0.3, 0.7)).</param>
-    /// <param name="customBehaviourSetup">Optional callback to add custom behaviours to the prefab.</param>
 	public static Item RegisterItem(
         AssetBundle bundle,
-        string prefabName,
+        GameObject prefab,
         string displayName,
         int price,
         ShopItemCategory category,
         string iconName,
-        string soundEffectName,
-        GameMaterialType mat,
+        SFX_Instance[] impactSounds,
         Vector3? holdPos = null,
-        Action<GameObject, string> customBehaviourSetup = null)
+        Vector3? holdRot = null
+        )
     {
-        Debug.Log($"Registering item: {prefabName}");
+        Debug.Log($"Registering item: {prefab.name}");
 
-        GameObject prefab = LoadPrefab(bundle, prefabName);
-        SetupPrefab(prefab, prefabName, mat);
-
-        // Allow custom behaviour setup
-        customBehaviourSetup?.Invoke(prefab, prefabName);
+        SetupPrefab(prefab);
 
         RegisterPrefabInPool(prefab);
 
         // Use default value if not provided
         Vector3 actualHoldPos = holdPos ?? new Vector3(0.3f, -0.3f, 0.7f);
-
-        Item item = CreateItem(bundle, prefabName, prefab, price, category, iconName, soundEffectName, actualHoldPos, displayName);
+        Vector3 actualHoldRot = holdRot ?? Vector3.zero;
+        Item item = CreateItem(bundle, prefab, price, category, iconName, impactSounds, actualHoldPos, actualHoldRot, displayName);
 
         if (!CheckDuplicateItem(item))
             AddItemToDatabase(item);
