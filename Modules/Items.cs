@@ -277,6 +277,25 @@ public static class Items
     }
 
     /// <summary>
+    /// Finds an item in the database whose prefab (itemObject) has a component of type T.
+    /// Used e.g. to get the GooBall item and steal its ticking AudioLoop for custom items.
+    /// </summary>
+    /// <typeparam name="T">Component type on the item's prefab (e.g. ItemGooBall).</typeparam>
+    /// <returns>The first Item whose itemObject has T, or null.</returns>
+    public static Item? GetItemByPrefabComponent<T>() where T : Component
+    {
+        ItemDatabase db = SingletonAsset<ItemDatabase>.Instance;
+        FieldInfo objectsField = GetObjectsField(db);
+        List<Item> currentItems = GetItemsFromField(objectsField, db);
+        foreach (Item item in currentItems)
+        {
+            if (item?.itemObject != null && item.itemObject.GetComponent<T>() != null)
+                return item;
+        }
+        return null;
+    }
+
+    /// <summary>
     /// Copies icon from a template item.
     /// </summary>
     /// <param name="currentItems">The list of existing items.</param>

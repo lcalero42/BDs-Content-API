@@ -12,7 +12,7 @@ public enum GameMaterialType
     /// <summary>Neutral white lit material.</summary>
     Lit,
     /// <summary>Gray material with subtle dark spotting.</summary>
-    M_Player,
+    GRAY,
     /// <summary>A variation of the standard player material (similar to M_Player).</summary>
     M_Player_1,
     /// <summary>The base material used for monster entities.</summary>
@@ -74,7 +74,7 @@ public enum GameMaterialType
     /// <summary>A plain gray material without spots, used for deactivated battery lights.</summary>
     M_BatteryLight_Off,
     /// <summary>A bright, glowing white material for flashlights.</summary>
-    M_Flashlight_Bright,
+    BRIGHT_WHITE,
     /// <summary>A light brown material with dark spots.</summary>
     M_Flashlight_1_1,
     /// <summary>A standard brown material with dark spots.</summary>
@@ -368,7 +368,7 @@ public class GameMaterials
             { "Material.012", GameMaterialType.Material_012 }
         }},
         { "AnglerMimic", new Dictionary<string, GameMaterialType> {
-            { "M_Player", GameMaterialType.M_Player },
+            { "M_Player", GameMaterialType.GRAY },
             { "M_Player 1", GameMaterialType.M_Player_1 },
             { "M_PlayerVisor", GameMaterialType.M_PlayerVisor },
             { "M_FlashBeam", GameMaterialType.M_FlashBeam },
@@ -406,7 +406,7 @@ public class GameMaterials
             { "M_Flashlight 1 1", GameMaterialType.M_Flashlight_1_1 },
             { "M_Flashlight 1 2", GameMaterialType.M_Flashlight_1_2 },
             { "M_Flashlight Off", GameMaterialType.M_Flashlight_Off },
-            { "M_Flashlight Bright", GameMaterialType.M_Flashlight_Bright },
+            { "M_Flashlight Bright", GameMaterialType.BRIGHT_WHITE },
             { "M_BatteryLight_Off", GameMaterialType.M_BatteryLight_Off }
         }},
         { "Fire", new Dictionary<string, GameMaterialType> {
@@ -534,12 +534,12 @@ public class GameMaterials
         {
             if (deepApply)
             {
-                foreach (Renderer r in target.GetComponentsInChildren<Renderer>(true)) r.material = mat;
+                foreach (Renderer r in target.GetComponentsInChildren<Renderer>(true)) r.materials = new Material[] { mat };
             }
             else
             {
                 var r = target.GetComponent<Renderer>();
-                if (r != null) r.material = mat;
+                if (r != null) r.materials = new Material[] { mat };
             }
         }
     }
