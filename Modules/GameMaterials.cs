@@ -543,6 +543,7 @@ public class GameMaterials
             {
                 foreach (Renderer r in target.GetComponentsInChildren<Renderer>(true))
                 {
+                    r.material = mat;
                     editArray(r.materials);
                 }
             }
@@ -551,6 +552,7 @@ public class GameMaterials
                 var r = target.GetComponent<Renderer>();
                 if (r != null)
                 {
+                    r.material = mat;
                     editArray(r.materials);
                 }
             }
