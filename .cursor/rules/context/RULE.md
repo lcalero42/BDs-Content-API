@@ -19,6 +19,8 @@ This document provides architectural and technical context for AI agents working
 - **Networking**: Photon Pun 2 / Photon Fusion.
 - **Core Game Framework**: `Zorro.Core` (internal framework used by the game).
 
+This project is in development in a Windows environment. Do not try to run linux commands.
+
 ## Core Game Architecture
 
 ### Monsters (Bots)
