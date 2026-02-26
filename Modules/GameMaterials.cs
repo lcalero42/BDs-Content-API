@@ -532,19 +532,16 @@ public class GameMaterials
     {
         if (Materials.TryGetValue(type, out Material mat) && mat != null)
         {
-            void editArray(Material[] materials)
-            {
-                for (int i = 0; i < materials.Length; i++)
-                {
-                    materials[i] = mat;
-                }
-            }
             if (deepApply)
             {
                 foreach (Renderer r in target.GetComponentsInChildren<Renderer>(true))
                 {
-                    r.material = mat;
-                    editArray(r.materials);
+                    Material[] mats = r.materials;
+                    for (int i = 0; i < mats.Length; i++)
+                    {
+                        mats[i] = mat;
+                    }
+                    r.materials = mats;
                 }
             }
             else
@@ -552,8 +549,12 @@ public class GameMaterials
                 var r = target.GetComponent<Renderer>();
                 if (r != null)
                 {
-                    r.material = mat;
-                    editArray(r.materials);
+                    Material[] mats = r.materials;
+                    for (int i = 0; i < mats.Length; i++)
+                    {
+                        mats[i] = mat;
+                    }
+                    r.materials = mats;
                 }
             }
         }

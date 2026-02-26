@@ -101,13 +101,13 @@ public static class Items
     /// <param name="displayName">The display name of the item.</param>
     /// <returns>The configured Item.</returns>
     public static Item CreateItem(AssetBundle bundle, GameObject prefab, int price, ShopItemCategory category,
-                                                        string iconName, SFX_Instance[] impactSounds, Vector3 holdPos, Vector3 holdRot, string displayName)
+                                                        string iconName, SFX_Instance[] impactSounds, Vector3 holdPos, Vector3 holdRot, string displayName, bool useAlternativeHoldPos, bool useAlternativeHoldRot, Vector3 alternativeHoldingPos, Vector3 alternativeHoldingRot)
     {
         Item item = ScriptableObject.CreateInstance<Item>();
 
         SetupPhysicsSound(prefab, impactSounds);
         SetupIcon(bundle, prefab, item, iconName);
-        SetupItemBasics(item, prefab, price, category, holdPos, holdRot, displayName);
+        SetupItemBasics(item, prefab, price, category, holdPos, holdRot, displayName, useAlternativeHoldPos, useAlternativeHoldRot, alternativeHoldingPos, alternativeHoldingRot);
 
         return item;
     }
@@ -208,7 +208,7 @@ public static class Items
     /// <param name="category">The shop category.</param>
     /// <param name="holdPos">The holding position of the item.</param>
     /// <param name="displayName">The display name of the item.</param>
-    public static void SetupItemBasics(Item item, GameObject prefab, int price, ShopItemCategory category, Vector3 holdPos, Vector3 holdRot, string displayName)
+    public static void SetupItemBasics(Item item, GameObject prefab, int price, ShopItemCategory category, Vector3 holdPos, Vector3 holdRot, string displayName, bool useAlternativeHoldPos, bool useAlternativeHoldRot, Vector3 alternativeHoldingPos, Vector3 alternativeHoldingRot)
     {
         item.displayName = displayName;
         item.itemObject = prefab;
@@ -221,8 +221,10 @@ public static class Items
         item.mass = 0.5f;
         item.holdPos = holdPos;
         item.holdRotation = holdRot;
-        item.useAlternativeHoldingPos = false;
-        item.useAlternativeHoldingRot = false;
+        item.useAlternativeHoldingPos = useAlternativeHoldPos;
+        item.useAlternativeHoldingRot = useAlternativeHoldRot;
+        item.alternativeHoldPos = alternativeHoldingPos;
+        item.alternativeHoldRot = alternativeHoldingRot;
         item.groundSizeMultiplier = 1f;
         item.groundMassMultiplier = 1f;
 
@@ -346,6 +348,13 @@ public static class Items
         {
             if (existingItem != null)
                 existingItem.price = 0;
+            if (existingItem.name.ToLower().Contains("norg") || existingItem.name.ToLower().Contains("norf"))
+            {
+                Logger.Log("norf gun stats");
+                Logger.Log(existingItem.holdPos.ToString());
+                Logger.Log(existingItem.holdRotation.ToString());
+                existingItem.purchasable = true;
+            }
         }
 
         objectsField.SetValue(db, currentItems);
@@ -394,7 +403,11 @@ public static class Items
         string iconName,
         SFX_Instance[] impactSounds,
         Vector3? holdPos = null,
-        Vector3? holdRot = null
+        Vector3? holdRot = null,
+        Vector3? alternativeHoldingPos = null,
+        Vector3? alternativeHoldingRot = null,
+        bool useAlternativeHoldPos = false,
+        bool useAlternativeHoldRot = false
         )
     {
         Debug.Log($"Registering item: {prefab.name}");
@@ -406,7 +419,9 @@ public static class Items
         // Use default value if not provided
         Vector3 actualHoldPos = holdPos ?? new Vector3(0.3f, -0.3f, 0.7f);
         Vector3 actualHoldRot = holdRot ?? Vector3.zero;
-        Item item = CreateItem(bundle, prefab, price, category, iconName, impactSounds, actualHoldPos, actualHoldRot, displayName);
+        Vector3 actualAlternativeHoldingPos = alternativeHoldingPos ?? new Vector3(0.3f, -0.3f, 0.7f);
+        Vector3 actualAlternativeHoldingRot = alternativeHoldingRot ?? Vector3.zero;
+        Item item = CreateItem(bundle, prefab, price, category, iconName, impactSounds, actualHoldPos, actualHoldRot, displayName, useAlternativeHoldPos, useAlternativeHoldRot, actualAlternativeHoldingPos, actualAlternativeHoldingRot);
 
         if (!CheckDuplicateItem(item))
             AddItemToDatabase(item);

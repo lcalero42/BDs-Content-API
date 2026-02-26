@@ -80,14 +80,14 @@ public class BotConfig
     public bool alertable = true;
 }
 
-public class NavMeshConfig
+public class NavMeshAgentConfig
 {
     public float speed = 3.5f;
     public float acceleration = 0f;
     public float angularSpeed = 120f;
     public float stoppingDistance = 0f;
     public float radius = 1f;
-    public float height = 4f;
+    public float height = 2f;
     public int obstacleAvoidanceType = (int)ObstacleAvoidanceType.HighQualityObstacleAvoidance;
 }
 public class MobSetupConfig
@@ -106,7 +106,7 @@ public class MobSetupConfig
     public RagdollConfig? ragdoll;
     public PhotonViewConfig? photonView;
     public BotConfig? bot;
-    public NavMeshConfig? navMesh;
+    public NavMeshAgentConfig? navMesh;
     public MonsterAnimationValuesConfig? monsterAnimationValues;
     public bool addMonsterAnimationHandler;
     public bool addMonsterSyncer;
@@ -505,7 +505,7 @@ public class Mobs
         Logger.Log($"MonsterAnimationHandler component added");
     }
 
-    private static void SetupBot(GameObject monster, BotConfig botConfig, NavMeshConfig? navConfig)
+    private static void SetupBot(GameObject monster, BotConfig botConfig, NavMeshAgentConfig? navConfig)
     {
         Logger.Log($"Creating Bot GameObject 'Bot_{botConfig.monsterName}' for {botConfig.monsterName}");
         var botObject = new GameObject($"Bot_{botConfig.monsterName}");
