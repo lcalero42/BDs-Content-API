@@ -13,13 +13,33 @@ namespace DbsContentApi.Patches;
 [HarmonyPatch(typeof(ShopViewScreen))]
 public static class ItemCategoriesPatch
 {
+    // [HarmonyPatch("DrawCategories"), HarmonyPrefix]
+    // static bool DrawCategoriesPatch(ShopViewScreen __instance)
+    // {
+    //     Modules.Logger.Log("ItemCategoriesPatch: Registering custom categories.");
+    //     __instance.ResetScreenIndex();
+    //     __instance.DestroyCategoryGrid();
+
+    //     ShopItemCategory[] array = (ShopItemCategory[])Enum.GetValues(typeof(ShopItemCategory));
+    //     // array = array.Concat(new[] { DbsContentApiPlugin.WeaponsCategory }).ToArray();
+    //     array = array.Concat(Modules.Items.customCategories.Select(c => (ShopItemCategory)c.index)).ToArray();
+
+    //     foreach (ShopItemCategory shopItemCategory in array)
+    //     {
+    //         if (shopItemCategory != ShopItemCategory.Invalid && !__instance.excludeCategories.Contains(shopItemCategory))
+    //         {
+    //             __instance.SpawnCategoryCell(shopItemCategory);
+    //         }
+    //     }
+    //     return false;
+    // }
+
     [HarmonyPatch("DrawCategories"), HarmonyPrefix]
     static bool DrawCategoriesPatch(ShopViewScreen __instance)
     {
-        Modules.Logger.Log("ItemCategoriesPatch: Registering custom categories.");
+        // Modules.Logger.Log("ItemCategoriesPatch: Registering custom categories.");
         __instance.ResetScreenIndex();
         __instance.DestroyCategoryGrid();
-
 
         ShopItemCategory[] array = (ShopItemCategory[])Enum.GetValues(typeof(ShopItemCategory));
         // array = array.Concat(new[] { DbsContentApiPlugin.WeaponsCategory }).ToArray();
@@ -74,7 +94,8 @@ public static class ShopInteractibleCategoryPatch
             {
                 ShopInteractibleCategory.m_ShopHandler = handler;
                 __instance.m_Category = category;
-                __instance.hoverText = customCategory.name;
+                // this doesnt work anymore for whatever reason ???
+                // __instance.hoverText = customCategory.name;
                 __instance.m_CategoryText.text = customCategory.name;
                 return false;
             }

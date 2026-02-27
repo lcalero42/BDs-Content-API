@@ -654,7 +654,7 @@ public class Mobs
         else if (rigCreator.slipperyMat == null)
         {
             Logger.Log($"  Searching for slippery PhysicMaterial");
-            foreach (var mat in Resources.FindObjectsOfTypeAll<PhysicMaterial>())
+            foreach (var mat in Resources.FindObjectsOfTypeAll<UnityEngine.PhysicsMaterial>())
             {
                 if (mat.name.ToLower().Contains("slippery"))
                 {
