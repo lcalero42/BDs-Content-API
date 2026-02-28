@@ -90,115 +90,116 @@ public enum GameMaterial
     // Sprites_Default,
     // LiberationSans_SDF_Material,
     // Font_Material,
-    M_Debug,
-    M_Projector_1,
-    M_BoomMic_2,
-    M_Projector_4,
-    M_Projector_3,
-    M_GreenScreen_3,
-    M_GreenScreen_1,
-    M_GreenScreen_2,
-    M_Projector_2,
-    M_Projector_5,
-    M_Container_2,
-    M_Player,
-    M_Winch_4,
-    M_Winch_6,
-    M_Winch_2,
-    M_Winch_3,
-    M_Winch_1,
-    M_Winch_5,
-    M_Shroom_1,
-    M_ReporterMic_1,
-    M_ReporterMic_3,
-    M_ReporterMic_2,
-    M_Monster_BlackLocal,
-    M_HatShop_4,
-    M_Book_2,
-    M_BoomMic_3,
-    M_Monster,
-    M_World,
-    M_Pool_6,
-    M_Jester_1,
-    M_Flashlight_2_2,
-    M_Flashlight_1_1,
-    M_Pool_4,
-    M_Radio_4,
-    M_Metal,
-    M_Hotdog_1,
-    M_Goo_3,
-    M_Flare_1,
-    M_Shroom_2,
+    M_Debug, // fully transparent
+    M_Projector_1, // light  grey
+
+    M_BoomMic_2, // light grey
+    M_Projector_4, // white
+    M_Projector_3, // grey
+    M_GreenScreen_3, // moon
+    M_GreenScreen_1, // grey
+    M_GreenScreen_2, // green
+    M_Projector_2, //  light flat grey
+    M_Projector_5, // glowing white
+    M_Container_2, // dark grey
+    M_Player, // dark grey/black
+    M_Winch_4, // dark blue/cyan
+    M_Winch_6, // very light grey almost white
+    M_Winch_2, // dark grey
+    M_Winch_3, // grey with white spots
+    M_Winch_1, // dark-ish red
+    M_Winch_5, // dark-ish red, a little less than winch 1
+    M_Shroom_1, // white with spots
+    M_ReporterMic_1, // dark flat grey
+    M_ReporterMic_3, // light flat grey
+    M_ReporterMic_2, // dark blue/grey
+    M_Monster_BlackLocal, // full black no shading
+    M_HatShop_4, // light brown
+    M_Book_2, // white paper
+    M_BoomMic_3, // grey
+    M_Monster, // monster base texture
+    M_World, // fixed old world texture
+    M_Pool_6, // orange
+    M_Jester_1, // yellow
+    M_Flashlight_2_2, // grey with spots
+    M_Flashlight_1_1, // brown
+    M_Pool_4, // brown
+    M_Radio_4, // orange
+    M_Metal, // neutral grey
+    M_Hotdog_1, // very light beige
+    M_Goo_3, // dark grey with dark spots
+    M_Flare_1, // red with dark spots
+    M_Shroom_2, // white with spots
     // NotoSansJP_Thin_Atlas_Material,
     // Lit,
-    M_FredGull_2,
-    M_Hotdog_3,
-    M_Rugby_3,
-    M_Rug_6,
-    M_Hug,
+    M_FredGull_2, // blue
+    M_World_AlphaClip, // weird transparent with black spots
+    M_Hotdog_3, // red
+    M_Rugby_3, // beige
+    M_Rug_6, // orange
+    M_Hug, // hug instructions
     M_Radio_1,
     // TextMeshPro_Sprite,
-    M_Borkin_2,
-    M_World_AlphaClip,
-    M_DarkBlack,
-    M_Flashlight_Bright,
+    M_Borkin_2, // yellow    M_World_AlphaClip, // weird trasparent with black spots
+    M_DarkBlack, // self explanatory
+    M_Flashlight_Bright, // glowing white
     // AkzidenzGroteskPro_Bold_SDF_Material,
-    M_SoundPlayer_4,
+    M_SoundPlayer_4, // white with dark spots
     // NotoSansBengali_Bold_Atlas_Material,
     // AkzidenzGroteskPro_Cn_SDF_Material,
-    M_Laser_Weak,
-    M_BatteryLight_Off,
-    M_BatteryLight_Green,
-    M_BatteryLight_Yellow,
-    M_BatteryLight_Red,
-    M_Flashlight_1_2,
-    M_Flashlight_Off,
-    M_Player_1,
-    M_PlayerVisor,
-    M_OxygenDisplay,
-    M_FlashBeam,
-    M_World_Local,
-    M_FlatUI,
-    M_Hamburger_3,
-    M_Norf_1,
-    M_Norf_2,
-    M_Jester_3,
+    M_Laser_Weak, // transparent slightly red
+    M_BatteryLight_Off, // flat grey
+    M_BatteryLight_Green, // lime
+    M_BatteryLight_Yellow, // glowing yellow
+    M_BatteryLight_Red, // glowing red
+    M_Flashlight_1_2, // brown with dark spots
+    M_Flashlight_Off, // black and blue depending on face
+    M_Player_1, // grey with small dark spots
+    M_PlayerVisor, // ice-like blue
+    M_OxygenDisplay, // grey with dark outlines
+    M_FlashBeam, // fully transparent, probably bends light a little
+    M_World_Local, // dark black with dark spots
+    M_FlatUI, // white
+    M_Hamburger_3, // yellow
+    M_Norf_1, // intense blue ice texture
+    M_Norf_2, // orange with white spots
+    M_Jester_3, // green
     M_Splash,
-    M_VideoCamera_Recording,
-    M_Cinema_2,
-    M_Hand,
-    M_Cutbox_1,
+    M_VideoCamera_Recording, // glowing red
+    M_Cinema_2, // white
+    M_Hand, // fixated static squared texture
+    M_Cutbox_1, // dark grey
     M_LongFlashlight_2_1,
-    M_Cutbox_2,
-    M_CD_Plastic,
-    M_CD,
+    M_Cutbox_2, // white
+    M_CD_Plastic, // white/beige
+    M_CD, // cd tex
     M_VFX_ShockStick,
-    M_Light_Bright,
-    M_ShockStick_1,
-    M_ShockStick_2,
-    M_Pool_7,
+    M_Light_Bright, // glowing white
+    M_ShockStick_1, // flat dark grey
+    M_ShockStick_2, // orange
+    M_Pool_7, // blue cyan
     M_Defib_3,
-    M_Flashlight_3_2,
-    M_Pool_8,
-    M_Chef_1,
-    M_Helmet,
+    M_Flashlight_3_2, // grey with dark spots
+    M_Pool_8, // yellow
+    M_Chef_1, // white with darker spots
+    M_Helmet, // yellow
     M_Pirate_3,
     M_Pirate_1,
-    M_PlayerHatColor,
-    M_Pirate_2,
-    M_Rug_3,
-    M_VideoCamera_3,
-    M_World_ShelfGrate_3,
-    M_HatShop_6,
+    M_PlayerHatColor, // blue cyan
+    M_Pirate_2, // orange 
+    M_Rug_3, // red/beige
+    M_VideoCamera_3, // glowing white
+    M_World_ShelfGrate_3, // black grillage effect
+    M_HatShop_6, // orange/beige with weird paralax effect
     M_Horn,
     M_VideoCamera_5,
     M_VideoCamera_1,
     M_VideoCamera_2,
-    M_Eye,
+    M_Eye, /// glowing white
     M_CameraScreen,
     M_Flare_2,
-    M_FlareEYe,
-    M_FlareBeam,
+    M_FlareEYe, // glowing red
+    M_FlareBeam, // transparent
     M_Ushanka_2,
     M_Ushanka_1,
     M_Container_1,
@@ -227,28 +228,28 @@ public enum GameMaterial
     M_Popper_4,
     M_Popper_3,
     M_BigSlapPainting_1,
-    ParticlesUnlit,
+    ParticlesUnlit, // dot particle text
     // NotoSansBengali_Thin_Atlas_Material,
-    M_RescueHook_1,
+    M_RescueHook_1, // dark yellow
     M_FredGull_1,
     M_Walkie_Talkie_2,
-    M_Walkie_Talkie_1,
+    M_Walkie_Talkie_1, // dark brown
     M_Walkie_Talkie_3,
-    M_Explosion,
+    M_Explosion, // explosion tex
     M_Milk1,
     M_Floppy_1,
     M_Hamburger_1,
     M_Hamburger_2,
-    M_Hamburger_4,
+    M_Hamburger_4, // green
     M_Jester_4,
     M_VideoDisplayScreen,
-    M_Hair_1,
-    M_Clown_2,
+    M_Hair_1, // dark grey-brown 
+    M_Clown_2, // red/beige light
     M_Cowboy,
-    M_Portrait_3,
+    M_Portrait_3, // brown
     M_RescueHook_2,
-    M_HookLight,
-    M_Apple_3,
+    M_HookLight, // glowing white/red
+    M_Apple_3, // green leaves-like texture
     // Rajdhani_Medium_SDF_Material,
     M_Child_5,
     M_Ears_1,
@@ -264,14 +265,14 @@ public enum GameMaterial
     // NotoSansJP_Bold_Atlas_Material,
     M_Defib_2,
     M_LongFlashlight_2_2,
-    M_Laser,
+    M_Laser, // glowing red
     M_SoundPlayer_3,
     // NotoSans_Thin_Atlas_Material,
     M_Goo_1,
     M_TitleCardRender,
     M_TitleCard_1,
     M_TitleCard,
-    M_TitleCard_2,
+    M_TitleCard_2, // flat red
     M_GooBright,
     M_FredGull_4,
     M_FredGull_3,
@@ -280,8 +281,8 @@ public enum GameMaterial
     M_Copyright_1,
     M_Rugby_2,
     M_Interior_7,
-    M_Clown_1,
-    M_Hotdog_4,
+    M_Clown_1, // red
+    M_Hotdog_4, // beige
     M_Top,
     M_Rug_5,
     M_Borkin_1,
@@ -292,17 +293,17 @@ public enum GameMaterial
     M_HatShop_3,
     M_BoomMic_1,
     M_Foodora,
-    M_Jester_2,
+    M_Jester_2, // violet
     M_Child_4,
     M_Balaclava,
-    M_Child_2,
-    M_ShopGlass,
+    M_Child_2, // green
+    M_ShopGlass, // transparent glass
     M_Podcast_4,
     M_Podcast_2,
     // NotoSans_VariableFont_wdth_wght_Atlas_Material,
     M_Portrait_2,
     M_SoundPlayer_2,
-    M_Goop,
+    M_Goop, // transparent dark with weird lighting properties
     M_SoundPlayer_1,
     M_HatShop_8,
     // AkzidenzGroteskPro_Light_SDF_Material,
@@ -310,28 +311,28 @@ public enum GameMaterial
     // NotoSansTC_Thin_Atlas_Material,
     M_News1,
     M_Defib_1,
-    M_Apple_2,
+    M_Apple_2, // brown with large lighter spots
     M_HatShop_5,
-    M_Rug_1,
+    M_Rug_1, // grey-blue
     // NotoSansKR_Bold_Atlas_Material,
-    M_FrontScreen,
+    M_FrontScreen, // transparent dark
     M_SoundPlayer_5,
     M_Portrait_4,
-    M_Child_3,
+    M_Child_3, // yellow
     M_TaserBeam,
     M_VFX_BombFuze,
     M_Rug_4,
     // NotoSansDevanagari_Thin_Atlas_Material,
     M_Flashlight_2_1,
-    M_Apple_1,
+    M_Apple_1, // red mercury-like texture
     M_DefaultParticle,
     M_Knifo,
     M_Bucket_1,
     M_Bomb,
-    M_Ears_2,
-    M_Child_1,
+    M_Ears_2, // pink
+    M_Child_1, // cyan blue
     M_Ears_3,
-    M_Cap_1,
+    M_Cap_1, // white
     // NotoSansDevanagari_Bold_Atlas_Material,
     M_Goo_2,
     M_Party_2,
@@ -342,12 +343,12 @@ public enum GameMaterial
     M_HatShop_7,
     // NotoSansSC_Thin_Atlas_Material,
     M_Brain_1,
-    M_HatShop_2,
+    M_HatShop_2, // lime 
     M_Rugby_1,
     M_Witch,
     M_Hotdog_2,
     M_HatShop_1,
-    M_Bowler,
+    M_Bowler, // dark violet
     M_Brain_2,
     // NotoSansThaiLooped_Thin_Atlas_Material,
     Jello_PostShader,
@@ -359,18 +360,18 @@ public enum GameMaterial
     M_Barrel_1,
     M_Barrel_2,
     M_Bed_1,
-    M_Bed_2,
+    M_Bed_2, // red
     M_Bed_3,
-    M_Bed_4,
-    M_Bed_5,
-    M_Bed_6,
+    M_Bed_4, // pink
+    M_Bed_5, // ice
+    M_Bed_6, // turquoise
     M_Bed_7,
     M_Bed_Default_1,
     M_House_1,
     M_House_10,
     M_House_11,
     M_House_12,
-    M_House_2,
+    M_House_2, // red
     M_House_3,
     M_House_4,
     M_House_5,
@@ -491,20 +492,114 @@ public enum GameMaterial
 /// </summary>
 public enum DescriptiveMaterial
 {
-    DEFAULT_SPRITE,
-    DEBUG,
-    PROJECTOR_BRIGHT,
-    GREEN_SCREEN_LUNAR,
-    PLAYER_BASE,
-    MONSTER_BASE,
-    MONSTER_RED,
-    MONSTER_BLACK,
-    GHOST_BASE,
-    SKY_NICE,
-    METAL_DARK,
-    GOLD_HALO,
-    DEEP_BLUE, // Example for M_EARS_3
-    // Add more descriptive names as needed
+    TRANSPARENT,
+    LIGHT_GREY_1,
+    WHITE_1,
+    GREY_1,
+    MOON,
+    GREY_2,
+    GREEN_1,
+    LIGHT_FLAT_GREY_1,
+    GLOWING_WHITE_1,
+    DARK_GREY_1,
+    DARK_GREY_BLACK,
+    DARK_BLUE_CYAN,
+    VERY_LIGHT_GREY,
+    DARK_GREY_2,
+    GREY_WHITE_SPOTS,
+    DARKISH_RED_1,
+    DARKISH_RED_2,
+    WHITE_SPOTS_1,
+    DARK_FLAT_GREY_1,
+    LIGHT_FLAT_GREY_2,
+    DARK_BLUE_GREY,
+    FULL_BLACK,
+    LIGHT_BROWN,
+    WHITE_PAPER,
+    GREY_3,
+    ORANGE_1,
+    YELLOW_1,
+    GREY_SPOTS_1,
+    BROWN_1,
+    BROWN_2,
+    ORANGE_2,
+    NEUTRAL_GREY,
+    VERY_LIGHT_BEIGE,
+    DARK_GREY_DARK_SPOTS,
+    RED_DARK_SPOTS,
+    WHITE_SPOTS_2,
+    BLUE_1,
+    WEIRD_TRANSPARENT_BLACK_SPOTS,
+    RED_1,
+    BEIGE_1,
+    ORANGE_3,
+    YELLOW_2,
+    GLOWING_WHITE_2,
+    WHITE_DARK_SPOTS,
+    TRANSPARENT_SLIGHTLY_RED,
+    FLAT_GREY,
+    LIME_1,
+    GLOWING_YELLOW,
+    GLOWING_RED,
+    BROWN_DARK_SPOTS,
+    BLACK_BLUE,
+    GREY_SMALL_DARK_SPOTS,
+    ICE_BLUE,
+    GREY_DARK_OUTLINES,
+    DARK_BLACK_DARK_SPOTS,
+    WHITE_2,
+    YELLOW_3,
+    INTENSE_BLUE_ICE,
+    ORANGE_WHITE_SPOTS,
+    GREEN_2,
+    GLOWING_RED_1,
+    WHITE_3,
+    DARK_GREY_3,
+    WHITE_BEIGE,
+    FLAT_DARK_GREY,
+    ORANGE_4,
+    BLUE_CYAN_1,
+    GREY_DARK_SPOTS_1,
+    YELLOW_4,
+    WHITE_DARKER_SPOTS,
+    YELLOW_5,
+    BLUE_CYAN_2,
+    ORANGE_5,
+    RED_BEIGE_1,
+    GLOWING_WHITE_3,
+    BLACK_GRILLAGE,
+    ORANGE_BEIGE_PARALAX,
+    GLOWING_WHITE_4,
+    GLOWING_RED_2,
+    DARK_YELLOW,
+    DARK_BROWN,
+    GREEN_3,
+    DARK_GREY_BROWN,
+    RED_BEIGE_LIGHT,
+    BROWN_3,
+    GLOWING_WHITE_RED,
+    GREEN_LEAVES,
+    CYAN_BLUE,
+    WHITE_4,
+    RED_2,
+    FLAT_RED,
+    VIOLET_1,
+    GREEN_4,
+    TRANSPARENT_GLASS,
+    TRANSPARENT_DARK_WEIRD_LIGHTING,
+    BROWN_LARGE_LIGHT_SPOTS,
+    GREY_BLUE,
+    TRANSPARENT_DARK,
+    YELLOW_6,
+    RED_MERCURY,
+    PINK_1,
+    LIME_2,
+    DARK_VIOLET,
+    RED_3,
+    PINK_2,
+    ICE_1,
+    TURQUOISE,
+    RED_4
 }
 
 public static class GameMaterials
@@ -513,16 +608,114 @@ public static class GameMaterials
     public static readonly Dictionary<string, GameMaterial> _nameToEnum = new();
     public static readonly Dictionary<DescriptiveMaterial, GameMaterial> _descriptiveToOriginal = new()
     {
-        // { DescriptiveMaterial.DEFAULT_SPRITE, GameMaterial.Sprites_Default },
-        { DescriptiveMaterial.DEBUG, GameMaterial.M_Debug },
-        { DescriptiveMaterial.PROJECTOR_BRIGHT, GameMaterial.M_Projector_5 },
-        { DescriptiveMaterial.GREEN_SCREEN_LUNAR, GameMaterial.M_GreenScreen_3 },
-        { DescriptiveMaterial.PLAYER_BASE, GameMaterial.M_Player },
-        { DescriptiveMaterial.MONSTER_BASE, GameMaterial.M_Monster },
-        { DescriptiveMaterial.MONSTER_BLACK, GameMaterial.M_Monster_BlackLocal },
-        { DescriptiveMaterial.METAL_DARK, GameMaterial.M_Metal },
-        { DescriptiveMaterial.GOLD_HALO, GameMaterial.M_Halo },
-        { DescriptiveMaterial.DEEP_BLUE, GameMaterial.M_Ears_3 },
+        { DescriptiveMaterial.TRANSPARENT, GameMaterial.M_Debug },
+        { DescriptiveMaterial.LIGHT_GREY_1, GameMaterial.M_Projector_1 },
+        { DescriptiveMaterial.WHITE_1, GameMaterial.M_Projector_4 },
+        { DescriptiveMaterial.GREY_1, GameMaterial.M_Projector_3 },
+        { DescriptiveMaterial.MOON, GameMaterial.M_GreenScreen_3 },
+        { DescriptiveMaterial.GREY_2, GameMaterial.M_GreenScreen_1 },
+        { DescriptiveMaterial.GREEN_1, GameMaterial.M_GreenScreen_2 },
+        { DescriptiveMaterial.LIGHT_FLAT_GREY_1, GameMaterial.M_Projector_2 },
+        { DescriptiveMaterial.GLOWING_WHITE_1, GameMaterial.M_Projector_5 },
+        { DescriptiveMaterial.DARK_GREY_1, GameMaterial.M_Container_2 },
+        { DescriptiveMaterial.DARK_GREY_BLACK, GameMaterial.M_Player },
+        { DescriptiveMaterial.DARK_BLUE_CYAN, GameMaterial.M_Winch_4 },
+        { DescriptiveMaterial.VERY_LIGHT_GREY, GameMaterial.M_Winch_6 },
+        { DescriptiveMaterial.DARK_GREY_2, GameMaterial.M_Winch_2 },
+        { DescriptiveMaterial.GREY_WHITE_SPOTS, GameMaterial.M_Winch_3 },
+        { DescriptiveMaterial.DARKISH_RED_1, GameMaterial.M_Winch_1 },
+        { DescriptiveMaterial.DARKISH_RED_2, GameMaterial.M_Winch_5 },
+        { DescriptiveMaterial.WHITE_SPOTS_1, GameMaterial.M_Shroom_1 },
+        { DescriptiveMaterial.DARK_FLAT_GREY_1, GameMaterial.M_ReporterMic_1 },
+        { DescriptiveMaterial.LIGHT_FLAT_GREY_2, GameMaterial.M_ReporterMic_3 },
+        { DescriptiveMaterial.DARK_BLUE_GREY, GameMaterial.M_ReporterMic_2 },
+        { DescriptiveMaterial.FULL_BLACK, GameMaterial.M_Monster_BlackLocal },
+        { DescriptiveMaterial.LIGHT_BROWN, GameMaterial.M_HatShop_4 },
+        { DescriptiveMaterial.WHITE_PAPER, GameMaterial.M_Book_2 },
+        { DescriptiveMaterial.GREY_3, GameMaterial.M_BoomMic_3 },
+        { DescriptiveMaterial.ORANGE_1, GameMaterial.M_Pool_6 },
+        { DescriptiveMaterial.YELLOW_1, GameMaterial.M_Jester_1 },
+        { DescriptiveMaterial.GREY_SPOTS_1, GameMaterial.M_Flashlight_2_2 },
+        { DescriptiveMaterial.BROWN_1, GameMaterial.M_Flashlight_1_1 },
+        { DescriptiveMaterial.BROWN_2, GameMaterial.M_Pool_4 },
+        { DescriptiveMaterial.ORANGE_2, GameMaterial.M_Radio_4 },
+        { DescriptiveMaterial.NEUTRAL_GREY, GameMaterial.M_Metal },
+        { DescriptiveMaterial.VERY_LIGHT_BEIGE, GameMaterial.M_Hotdog_1 },
+        { DescriptiveMaterial.DARK_GREY_DARK_SPOTS, GameMaterial.M_Goo_3 },
+        { DescriptiveMaterial.RED_DARK_SPOTS, GameMaterial.M_Flare_1 },
+        { DescriptiveMaterial.WHITE_SPOTS_2, GameMaterial.M_Shroom_2 },
+        { DescriptiveMaterial.BLUE_1, GameMaterial.M_FredGull_2 },
+        { DescriptiveMaterial.WEIRD_TRANSPARENT_BLACK_SPOTS, GameMaterial.M_World_AlphaClip },
+        { DescriptiveMaterial.RED_1, GameMaterial.M_Hotdog_3 },
+        { DescriptiveMaterial.BEIGE_1, GameMaterial.M_Rugby_3 },
+        { DescriptiveMaterial.ORANGE_3, GameMaterial.M_Rug_6 },
+        { DescriptiveMaterial.YELLOW_2, GameMaterial.M_Borkin_2 },
+        { DescriptiveMaterial.GLOWING_WHITE_2, GameMaterial.M_Flashlight_Bright },
+        { DescriptiveMaterial.WHITE_DARK_SPOTS, GameMaterial.M_SoundPlayer_4 },
+        { DescriptiveMaterial.TRANSPARENT_SLIGHTLY_RED, GameMaterial.M_Laser_Weak },
+        { DescriptiveMaterial.FLAT_GREY, GameMaterial.M_BatteryLight_Off },
+        { DescriptiveMaterial.LIME_1, GameMaterial.M_BatteryLight_Green },
+        { DescriptiveMaterial.GLOWING_YELLOW, GameMaterial.M_BatteryLight_Yellow },
+        { DescriptiveMaterial.GLOWING_RED, GameMaterial.M_BatteryLight_Red },
+        { DescriptiveMaterial.BROWN_DARK_SPOTS, GameMaterial.M_Flashlight_1_2 },
+        { DescriptiveMaterial.BLACK_BLUE, GameMaterial.M_Flashlight_Off },
+        { DescriptiveMaterial.GREY_SMALL_DARK_SPOTS, GameMaterial.M_Player_1 },
+        { DescriptiveMaterial.ICE_BLUE, GameMaterial.M_PlayerVisor },
+        { DescriptiveMaterial.GREY_DARK_OUTLINES, GameMaterial.M_OxygenDisplay },
+        { DescriptiveMaterial.DARK_BLACK_DARK_SPOTS, GameMaterial.M_World_Local },
+        { DescriptiveMaterial.WHITE_2, GameMaterial.M_FlatUI },
+        { DescriptiveMaterial.YELLOW_3, GameMaterial.M_Hamburger_3 },
+        { DescriptiveMaterial.INTENSE_BLUE_ICE, GameMaterial.M_Norf_1 },
+        { DescriptiveMaterial.ORANGE_WHITE_SPOTS, GameMaterial.M_Norf_2 },
+        { DescriptiveMaterial.GREEN_2, GameMaterial.M_Jester_3 },
+        { DescriptiveMaterial.GLOWING_RED_1, GameMaterial.M_VideoCamera_Recording },
+        { DescriptiveMaterial.WHITE_3, GameMaterial.M_Cinema_2 },
+        { DescriptiveMaterial.DARK_GREY_3, GameMaterial.M_Cutbox_1 },
+        { DescriptiveMaterial.WHITE_BEIGE, GameMaterial.M_CD_Plastic },
+        { DescriptiveMaterial.FLAT_DARK_GREY, GameMaterial.M_ShockStick_1 },
+        { DescriptiveMaterial.ORANGE_4, GameMaterial.M_ShockStick_2 },
+        { DescriptiveMaterial.BLUE_CYAN_1, GameMaterial.M_Pool_7 },
+        { DescriptiveMaterial.GREY_DARK_SPOTS_1, GameMaterial.M_Flashlight_3_2 },
+        { DescriptiveMaterial.YELLOW_4, GameMaterial.M_Pool_8 },
+        { DescriptiveMaterial.WHITE_DARKER_SPOTS, GameMaterial.M_Chef_1 },
+        { DescriptiveMaterial.YELLOW_5, GameMaterial.M_Helmet },
+        { DescriptiveMaterial.BLUE_CYAN_2, GameMaterial.M_PlayerHatColor },
+        { DescriptiveMaterial.ORANGE_5, GameMaterial.M_Pirate_2 },
+        { DescriptiveMaterial.RED_BEIGE_1, GameMaterial.M_Rug_3 },
+        { DescriptiveMaterial.GLOWING_WHITE_3, GameMaterial.M_VideoCamera_3 },
+        { DescriptiveMaterial.BLACK_GRILLAGE, GameMaterial.M_World_ShelfGrate_3 },
+        { DescriptiveMaterial.ORANGE_BEIGE_PARALAX, GameMaterial.M_HatShop_6 },
+        { DescriptiveMaterial.GLOWING_WHITE_4, GameMaterial.M_Eye },
+        { DescriptiveMaterial.GLOWING_RED_2, GameMaterial.M_FlareEYe },
+        { DescriptiveMaterial.DARK_YELLOW, GameMaterial.M_RescueHook_1 },
+        { DescriptiveMaterial.DARK_BROWN, GameMaterial.M_Walkie_Talkie_1 },
+        { DescriptiveMaterial.GREEN_3, GameMaterial.M_Hamburger_4 },
+        { DescriptiveMaterial.DARK_GREY_BROWN, GameMaterial.M_Hair_1 },
+        { DescriptiveMaterial.RED_BEIGE_LIGHT, GameMaterial.M_Clown_2 },
+        { DescriptiveMaterial.BROWN_3, GameMaterial.M_Portrait_3 },
+        { DescriptiveMaterial.GLOWING_WHITE_RED, GameMaterial.M_HookLight },
+        { DescriptiveMaterial.GREEN_LEAVES, GameMaterial.M_Apple_3 },
+        { DescriptiveMaterial.CYAN_BLUE, GameMaterial.M_Child_1 },
+        { DescriptiveMaterial.WHITE_4, GameMaterial.M_Cap_1 },
+        { DescriptiveMaterial.RED_2, GameMaterial.M_Apple_1 },
+        { DescriptiveMaterial.FLAT_RED, GameMaterial.M_TitleCard_2 },
+        { DescriptiveMaterial.VIOLET_1, GameMaterial.M_Jester_2 },
+        { DescriptiveMaterial.GREEN_4, GameMaterial.M_Child_2 },
+        { DescriptiveMaterial.TRANSPARENT_GLASS, GameMaterial.M_ShopGlass },
+        { DescriptiveMaterial.TRANSPARENT_DARK_WEIRD_LIGHTING, GameMaterial.M_Goop },
+        { DescriptiveMaterial.BROWN_LARGE_LIGHT_SPOTS, GameMaterial.M_Apple_2 },
+        { DescriptiveMaterial.GREY_BLUE, GameMaterial.M_Rug_1 },
+        { DescriptiveMaterial.TRANSPARENT_DARK, GameMaterial.M_FrontScreen },
+        { DescriptiveMaterial.YELLOW_6, GameMaterial.M_Child_3 },
+        { DescriptiveMaterial.RED_MERCURY, GameMaterial.M_Apple_1 },
+        { DescriptiveMaterial.PINK_1, GameMaterial.M_Ears_2 },
+        { DescriptiveMaterial.LIME_2, GameMaterial.M_HatShop_2 },
+        { DescriptiveMaterial.DARK_VIOLET, GameMaterial.M_Bowler },
+        { DescriptiveMaterial.RED_3, GameMaterial.M_Bed_2 },
+        { DescriptiveMaterial.PINK_2, GameMaterial.M_Bed_4 },
+        { DescriptiveMaterial.ICE_1, GameMaterial.M_Bed_5 },
+        { DescriptiveMaterial.TURQUOISE, GameMaterial.M_Bed_6 },
+        { DescriptiveMaterial.RED_4, GameMaterial.M_House_2 }
     };
 
     static GameMaterials()
@@ -917,6 +1110,8 @@ public static class GameMaterials
         _nameToEnum["M_Heal"] = GameMaterial.M_Heal;
     }
 
+    public static event Action? OnMaterialsLoaded;
+
     /// <summary>
     /// Loads all materials from the game resources.
     /// </summary>
@@ -952,6 +1147,8 @@ public static class GameMaterials
             }
         }
         Logger.Log($"Loaded {_materials.Count} materials");
+
+        OnMaterialsLoaded?.Invoke();
     }
 
     public static Material GetMaterial(GameMaterial type) => _materials.TryGetValue(type, out var mat) ? mat : null!;

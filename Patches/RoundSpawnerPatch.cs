@@ -43,6 +43,12 @@ public static class RoundSpawnerPatch
 
         if (DbsContentApiPlugin.moddedMobsOnly)
         {
+            // lets repeat the array 2 times since the updated game code now removes 1 monster from the array
+            var customMonsters = DbsContentApiPlugin.customMonsters;
+            for (int i = 0; i < 2; i++)
+            {
+                customMonsters.AddRange(customMonsters);
+            }
             possibleSpawnsField.Value = DbsContentApiPlugin.customMonsters.ToArray();
             Logger.Log("RoundSpawnerPatch: Modded mobs only: " + possibleSpawnsField.Value.Length);
         }
