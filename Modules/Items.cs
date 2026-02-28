@@ -347,7 +347,10 @@ public static class Items
         foreach (Item existingItem in currentItems)
         {
             if (existingItem != null)
+            {
                 existingItem.price = 0;
+            }
+
             if (existingItem.name.ToLower().Contains("norg") || existingItem.name.ToLower().Contains("norf"))
             {
                 Logger.Log("norf gun stats");

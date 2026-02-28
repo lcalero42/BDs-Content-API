@@ -94,8 +94,7 @@ public static class ShopInteractibleCategoryPatch
             {
                 ShopInteractibleCategory.m_ShopHandler = handler;
                 __instance.m_Category = category;
-                // this doesnt work anymore for whatever reason ???
-                // __instance.hoverText = customCategory.name;
+                __instance.hoverText = customCategory.name;
                 __instance.m_CategoryText.text = customCategory.name;
                 return false;
             }

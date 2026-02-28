@@ -1,3 +1,4 @@
+using DbsContentApi.Modules;
 using HarmonyLib;
 
 namespace DbsContentApi.Patches;
@@ -12,6 +13,8 @@ public static class ShopViewScreenPatch
 		if (isRegistered)
 			return;
 		isRegistered = true;
+
+		GameMaterials.InitMaterials();
 
 		Modules.Logger.Log("RegisterItemsPatch: Registering custom items.");
 		DbsContentApiPlugin.customItemsRegistrationCallbacks.ForEach(callback => callback());

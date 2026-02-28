@@ -30,17 +30,15 @@ public class DbsContentApiPlugin : BaseUnityPlugin
 
     private void Awake()
     {
-        Modules.Logger.Log("DbsContentApi API Initializing... [POST UPDATE]");
+        Modules.Logger.Init(base.Logger);
+        Modules.Logger.Log("DbsContentApi API Initializing...");
 
         Instance = this;
 
         Patch();
 
-        GameMaterials.InitMaterials();
         ImpactSoundScanner.InitImpactSounds();
 
-
-        Modules.Logger.Init(base.Logger);
 
         Modules.Logger.Log("DbsContentApi API Loaded successfully!");
     }
