@@ -351,13 +351,15 @@ public static class Items
                 existingItem.price = 0;
             }
 
-            if (existingItem.name.ToLower().Contains("norg") || existingItem.name.ToLower().Contains("norf"))
-            {
-                Logger.Log("norf gun stats");
-                Logger.Log(existingItem.holdPos.ToString());
-                Logger.Log(existingItem.holdRotation.ToString());
-                existingItem.purchasable = true;
-            }
+            // if (existingItem.name.ToLower().Contains("norg") || existingItem.name.ToLower().Contains("norf"))
+            // {
+            //     existingItem.purchasable = true;
+            // }
+
+            // if (existingItem.name.ToLower().Contains("bomb"))
+            // {
+            //     existingItem.purchasable = true;
+            // }
         }
 
         objectsField.SetValue(db, currentItems);
