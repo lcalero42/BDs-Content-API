@@ -350,16 +350,6 @@ public static class Items
             {
                 existingItem.price = 0;
             }
-
-            // if (existingItem.name.ToLower().Contains("norg") || existingItem.name.ToLower().Contains("norf"))
-            // {
-            //     existingItem.purchasable = true;
-            // }
-
-            // if (existingItem.name.ToLower().Contains("bomb"))
-            // {
-            //     existingItem.purchasable = true;
-            // }
         }
 
         objectsField.SetValue(db, currentItems);

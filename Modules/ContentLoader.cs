@@ -46,7 +46,7 @@ public static class ContentLoader
     /// </summary>
     /// <param name="prefab">The prefab to register.</param>
     public static void RegisterPrefabInPhotonPool(GameObject prefab)
-    {        
+    {
         if (PhotonNetwork.PrefabPool is DefaultPool defaultPool && !defaultPool.ResourceCache.ContainsKey(prefab.name))
         {
             defaultPool.ResourceCache.Add(prefab.name, prefab);
