@@ -1,24 +1,44 @@
+using System;
 using System.Collections.Generic;
-using BepInEx;
 using HarmonyLib;
 using UnityEngine;
-using DbsContentApi.Modules;
-using System;
 
 namespace DbsContentApi;
 
-[ContentWarningPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_VERSION, MyPluginInfo.VANILLA_COMPATIBLE)]
-[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
-public class DbsContentApiPlugin : BaseUnityPlugin
+/// <summary>
+///     Main plugin class for DbsContentApi.
+/// </summary>
+[ContentWarningPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_VERSION, false)]
+public class DbsContentApiPlugin
 {
-    internal static Harmony? Harmony { get; set; }
-    public static DbsContentApiPlugin Instance { get; private set; } = null!;
+    private bool _isPatched;
+
+    static DbsContentApiPlugin()
+    {
+        // Create new instance
+        Instance = new DbsContentApiPlugin();
+    }
+
+    /// <summary>
+    ///     Constructor for the DbsContentApi plugin.
+    /// </summary>
+    public DbsContentApiPlugin()
+    {
+        Modules.Logger.Log($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
+    }
+
+    private Harmony? Harmony { get; set; }
+    internal static Logger? Logger { get; }
+
+    /// <summary>
+    ///     Singleton instance of the DbsContentApi plugin.
+    /// </summary>
+    public static DbsContentApiPlugin Instance { get; }
+
     /// <summary>
     /// Global list of registered custom monsters.
     /// </summary>
     public static List<GameObject> customMonsters = new List<GameObject>();
-    // public const ShopItemCategory WeaponsCategory = (ShopItemCategory)8;
-
     public static List<Action> customItemsRegistrationCallbacks = new List<Action>();
     public static List<ContentEvent> customContentEvents = new List<ContentEvent>();
 
@@ -28,39 +48,53 @@ public class DbsContentApiPlugin : BaseUnityPlugin
     public static bool moddedMobsOnly = false;
     public static bool allItemsFree = false;
 
-    private void Awake()
+    private void PatchAll()
     {
-        Modules.Logger.Init(base.Logger);
-        Modules.Logger.Log("DbsContentApi API Initializing...");
-
-        Instance = this;
-
-        Patch();
-
-        ImpactSoundScanner.InitImpactSounds();
-
-
-        Modules.Logger.Log("DbsContentApi API Loaded successfully!");
-    }
-
-    internal static void Patch()
-    {
-        Harmony ??= new Harmony("db.contentapi");
+        if (_isPatched)
+        {
+            Modules.Logger.LogWarning("Already patched!");
+            return;
+        }
 
         Modules.Logger.Log("Patching...");
 
-        Harmony.PatchAll();
+        Harmony ??= new Harmony(MyPluginInfo.PLUGIN_GUID);
 
-        Modules.Logger.Log("Finished patching!");
+        try
+        {
+            Harmony.PatchAll();
+            _isPatched = true;
+            Modules.Logger.Log("Patched!");
+        }
+        catch (Exception e)
+        {
+            Modules.Logger.LogError($"Failed to patch: {e}");
+        }
     }
 
-    internal static void Unpatch()
+    /// <summary>
+    ///     Unpatches all patches applied by the plugin.
+    /// </summary>
+    public void UnpatchAll()
     {
+        if (!_isPatched)
+        {
+            Modules.Logger.LogWarning("Already unpatched!");
+            return;
+        }
+
         Modules.Logger.Log("Unpatching...");
 
-        Harmony?.UnpatchSelf();
-
-        Modules.Logger.Log("Finished unpatching!");
+        try
+        {
+            Harmony?.UnpatchSelf();
+            _isPatched = false;
+            Modules.Logger.Log("Unpatched!");
+        }
+        catch (Exception e)
+        {
+            Modules.Logger.LogError($"Failed to unpatch: {e}");
+        }
     }
 
     public static void SetModdedMobsOnly(bool value)

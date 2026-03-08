@@ -2,6 +2,7 @@ using System.IO;
 using UnityEngine;
 using BepInEx;
 using Photon.Pun;
+using System.Reflection;
 
 namespace DbsContentApi.Modules;
 
@@ -13,16 +14,26 @@ public static class ContentLoader
     /// <summary>
     /// Loads an AssetBundle from the plugin's directory.
     /// </summary>
-    /// <param name="pluginInfo">The BepInPlugin information for path resolution.</param>
     /// <param name="bundleName">The filename of the bundle to load.</param>
     /// <returns>The loaded AssetBundle.</returns>
-    /// <exception cref="System.Exception">Thrown if the bundle cannot be found or loaded.</exception>
-    public static AssetBundle LoadAssetBundle(PluginInfo pluginInfo, string bundleName)
+    public static AssetBundle LoadAssetBundle(string assemblyLocation, string bundleName)
     {
-        string bundlePath = Path.Combine(Path.GetDirectoryName(pluginInfo.Location), bundleName);
-        AssetBundle bundle = AssetBundle.LoadFromFile(bundlePath);
-        if (bundle == null) throw new System.Exception($"Failed to load AssetBundle: {bundleName} at path: {bundlePath}");
-        return bundle;
+        // Get the directory where the current DLL is located
+        string directory = Path.GetDirectoryName(assemblyLocation);
+
+        // Combine directory with the bundle filename
+        string bundlePath = Path.Combine(directory, bundleName);
+
+        // Load the bundle
+        AssetBundle myBundle = AssetBundle.LoadFromFile(bundlePath);
+
+        if (myBundle == null)
+        {
+            Debug.LogError($"Failed to load AssetBundle: {bundleName} at path: {bundlePath}");
+            return null;
+        }
+
+        return myBundle;
     }
 
     /// <summary>
@@ -38,8 +49,6 @@ public static class ContentLoader
         if (prefab == null) throw new System.Exception($"Failed to load Prefab: {prefabName} from bundle: {bundle.name}");
         return prefab;
     }
-
-
 
     /// <summary>
     /// Registers a prefab in the PhotonNetwork prefab pool.

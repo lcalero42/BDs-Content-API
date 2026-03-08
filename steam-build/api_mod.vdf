@@ -4,7 +4,7 @@
 	"publishedfileid"		"3680666123"
 	"contentfolder"		"C:\Users\ADMIN\Desktop\cw\DbsContentApi\steam-build\build"
 	"previewfile"		"C:\Users\ADMIN\Desktop\cw\DbsContentApi\build-metadata\icon.png"
-	"visibility"		"1"
+	"visibility"		"0"
 	"title"		"BD's content API"
 	"description"		"Just a boring API for modders"
 	"changenote"		"Initial release"
