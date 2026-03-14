@@ -88,6 +88,7 @@ public class NavMeshAgentConfig
     public float stoppingDistance = 0f;
     public float radius = 1f;
     public float height = 2f;
+    public bool wide = false;
     public int obstacleAvoidanceType = (int)ObstacleAvoidanceType.HighQualityObstacleAvoidance;
 }
 public class MobSetupConfig
@@ -512,6 +513,7 @@ public class Mobs
         botObject.transform.SetParent(monster.transform);
         botObject.transform.localPosition = Vector3.zero;
         botObject.transform.localRotation = Quaternion.identity;
+        botObject.transform.localScale = new Vector3(1f, 1f, 1f);
 
         Logger.Log($"Adding PhotonView to Bot for {botConfig.monsterName}");
         var pv = botObject.AddComponent<PhotonView>();
@@ -550,6 +552,14 @@ public class Mobs
             nav.radius = navConfig.radius;
             nav.height = navConfig.height;
             nav.obstacleAvoidanceType = (ObstacleAvoidanceType)navConfig.obstacleAvoidanceType;
+            if (navConfig.wide)
+            {
+                nav.agentTypeID = -1372625422;
+            }
+            else
+            {
+                nav.agentTypeID = 0;
+            }
         }
         else
         {

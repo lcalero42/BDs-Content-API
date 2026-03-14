@@ -212,7 +212,9 @@ public static class Items
     {
         item.displayName = displayName;
         item.itemObject = prefab;
+
         item.persistentID = "unlistedentities." + item.displayName.ToLower();
+        item.PersistentID = GuidHelper.ToDeterministicGuid(item.persistentID);
         item.name = "unlistedentities." + item.displayName.ToLower();
 
         item.itemType = Item.ItemType.Tool;
@@ -375,6 +377,19 @@ public static class Items
                 return true;
         }
         return false;
+    }
+
+    /// <summary>
+    /// Finds an item by its ID in the ItemDatabase.
+    /// </summary>
+    /// <param name="id">The item ID to find.</param>
+    /// <returns>The Item if found, null otherwise.</returns>
+    public static Item? GetItemByID(byte id)
+    {
+        ItemDatabase db = SingletonAsset<ItemDatabase>.Instance;
+        FieldInfo objectsField = GetObjectsField(db);
+        List<Item> currentItems = GetItemsFromField(objectsField, db);
+        return currentItems.FirstOrDefault(i => i != null && i.id == id);
     }
 
     /// <summary>
