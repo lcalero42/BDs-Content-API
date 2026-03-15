@@ -48,6 +48,8 @@ public class DbsContentApiPlugin
     public static bool moddedMobsOnly = false;
     public static bool allItemsFree = false;
 
+	internal static List<BaseCWInput> _inputs = new List<BaseCWInput>();
+
     private void PatchAll()
     {
         if (_isPatched)
