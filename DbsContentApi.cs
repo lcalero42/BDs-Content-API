@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DbsContentApi.Modules;
 using HarmonyLib;
 using UnityEngine;
 
@@ -28,8 +29,6 @@ public class DbsContentApiPlugin
     }
 
     private Harmony? Harmony { get; set; }
-    internal static Logger? Logger { get; }
-
     /// <summary>
     ///     Singleton instance of the DbsContentApi plugin.
     /// </summary>
@@ -48,7 +47,7 @@ public class DbsContentApiPlugin
     public static bool moddedMobsOnly = false;
     public static bool allItemsFree = false;
 
-	internal static List<BaseCWInput> _inputs = new List<BaseCWInput>();
+    internal static List<BaseCWInput> _inputs = new List<BaseCWInput>();
 
     private void PatchAll()
     {

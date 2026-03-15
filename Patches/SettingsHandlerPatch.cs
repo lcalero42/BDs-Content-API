@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using DbsContentApi.Modules;
 using HarmonyLib;
 using Zorro.Settings;
 
@@ -36,7 +37,7 @@ namespace DbsContentApi.Patches
         }
         private static void AddCustomBinds(List<Setting> settings)
         {
-            foreach (BaseCWInput input in _inputs)
+            foreach (BaseCWInput input in DbsContentApiPlugin._inputs)
             {
                 settings.Add(input);
             }

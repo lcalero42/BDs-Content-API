@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using DbsContentApi.Modules;
+using HarmonyLib;
 using System.Collections;
 using Zorro.Settings;
 
@@ -16,7 +17,7 @@ namespace DbsContentApi.Patches
 
         private static IEnumerator setModdedKeybinds()
         {
-            foreach(var keybind in Plugin._inputs)
+            foreach (var keybind in DbsContentApiPlugin._inputs)
             {
                 yield return null;
                 keybind.inputKey.SetKeybind(GetSetting(keybind));
@@ -25,9 +26,9 @@ namespace DbsContentApi.Patches
 
         private static KeyCodeSetting GetSetting(BaseCWInput settingType)
         {
-            foreach(Setting setting in GameHandler.Instance.SettingsHandler.settings)
+            foreach (Setting setting in GameHandler.Instance.SettingsHandler.settings)
             {
-                if(setting is KeyCodeSetting keyCodeSetting && keyCodeSetting == settingType)
+                if (setting is KeyCodeSetting keyCodeSetting && keyCodeSetting == settingType)
                 {
                     return keyCodeSetting;
                 }

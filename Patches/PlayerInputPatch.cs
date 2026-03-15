@@ -9,7 +9,7 @@ namespace DbsContentApi.Patches
         [HarmonyPostfix]
         private static void SampeInput(Player player)
         {
-            foreach(var moddedInputs in Plugin._inputs) //u gly.
+            foreach (var moddedInputs in DbsContentApiPlugin._inputs)
             {
                 moddedInputs.HandleKeys(player);
             }
