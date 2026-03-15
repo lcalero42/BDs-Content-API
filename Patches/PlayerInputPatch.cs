@@ -9,6 +9,8 @@ namespace DbsContentApi.Patches
         [HarmonyPostfix]
         private static void SampeInput(Player player)
         {
+            if (player != Player.localPlayer) return; // Only handle for local player
+
             foreach (var moddedInputs in DbsContentApiPlugin._inputs)
             {
                 moddedInputs.HandleKeys(player);

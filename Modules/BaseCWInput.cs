@@ -1,4 +1,5 @@
 ﻿using Zorro.Settings;
+using UnityEngine;
 
 namespace DbsContentApi.Modules;
 
@@ -7,18 +8,15 @@ public abstract class BaseCWInput : KeyCodeSetting
     public void HandleKeys(Player player)
     {
         if (_disabled) return;
-        if (inputKey.GetKeyDown())
-        {
+        
+        KeyCode key = (KeyCode)Value == KeyCode.None ? GetDefaultKey() : (KeyCode)Value;
+        
+        if (Input.GetKeyDown(key))
             OnKeyDown(player);
-        }
-        else if (inputKey.GetKeyUp())
-        {
+        else if (Input.GetKeyUp(key))
             OnKeyUp(player);
-        }
-        else if (inputKey.GetKey())
-        {
+        else if (Input.GetKey(key))
             OnHeld(player);
-        }
     }
     protected abstract void OnKeyDown(Player player);
 
@@ -43,6 +41,7 @@ public abstract class BaseCWInput : KeyCodeSetting
 
         DbsContentApiPlugin._inputs.Add(this);
         _disabled = false;
+        Logger.Log($"[BaseCWInput] Created input: {GetType().Name}, default key: {GetDefaultKey()}");
     }
 
     protected bool _disabled;
