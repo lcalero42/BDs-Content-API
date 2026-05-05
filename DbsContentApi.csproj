@@ -71,6 +71,12 @@
     <Reference Include="LocalizationAssembly">
       <HintPath>$(CWDir)\Content Warning_Data\Managed\LocalizationAssembly.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.LocalizationModule">
+      <HintPath>$(CWDir)\Content Warning_Data\Managed\UnityEngine.LocalizationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Localization">
+      <HintPath>$(CWDir)\Content Warning_Data\Managed\Unity.Localization.dll</HintPath>
+    </Reference>
     <Reference Include="PhotonRealtime">
       <HintPath>$(CWDir)\Content Warning_Data\Managed\PhotonRealtime.dll</HintPath>
     </Reference>

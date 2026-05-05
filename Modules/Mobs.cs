@@ -237,7 +237,7 @@ public class Mobs
         var zombePrefab = Resources.Load<GameObject>("Zombe");
         if (zombePrefab == null)
         {
-            Logger.LogWarning($"  Zombe prefab not found, skipping shader restoration for {prefab.name}");
+            Logger.LogError($"  Zombe prefab not found, skipping shader restoration for {prefab.name}");
             return;
         }
 
@@ -439,12 +439,12 @@ public class Mobs
             }
             else
             {
-                Logger.LogWarning($"PlayerVisual component not found on Visual for {monster.name}");
+                Logger.LogError($"PlayerVisual component not found on Visual for {monster.name}");
             }
         }
         else
         {
-            Logger.LogWarning($"Visual GameObject not found for {monster.name}");
+            Logger.LogError($"Visual GameObject not found for {monster.name}");
         }
     }
 
@@ -462,7 +462,7 @@ public class Mobs
             }
             else
             {
-                Logger.LogWarning($"MonsterSyncer not found for PhotonView observation on {monster.name}");
+                Logger.LogError($"MonsterSyncer not found for PhotonView observation on {monster.name}");
             }
         }
         else
@@ -482,7 +482,7 @@ public class Mobs
         }
         else
         {
-            Logger.LogWarning($"HeadPosition not found for {monster.name}");
+            Logger.LogError($"HeadPosition not found for {monster.name}");
         }
     }
 
@@ -496,7 +496,7 @@ public class Mobs
         }
         else
         {
-            Logger.LogWarning($"PlayerGroundPos not found for {monster.name}");
+            Logger.LogError($"PlayerGroundPos not found for {monster.name}");
         }
     }
 
@@ -528,17 +528,17 @@ public class Mobs
         bot.animMoveSpeedFactor = botConfig.animMoveSpeedFactor;
         bot.alertable = botConfig.alertable;
 
-        var hip = monster.transform.Find("Visual")?.Find(botConfig.monsterName)?.Find("Armature")?.Find("Hip");
-        bot.centerTransform = hip;
         bot.groundTransform = monster.transform.Find("PlayerGroundPos");
         bot.syncData = new Bot.SyncData { targetPlayerId = -1 };
-        if (hip != null)
+        var centerTransformHipFollower = monster.transform.Find("Center");
+        bot.centerTransform = centerTransformHipFollower;
+        if (centerTransformHipFollower != null)
         {
             Logger.Log($"Bot centerTransform set to Hip");
         }
         else
         {
-            Logger.LogWarning($"Hip transform not found for Bot centerTransform on {botConfig.monsterName}");
+            Logger.LogError($"Center transform not found for Bot centerTransform on {botConfig.monsterName}");
         }
 
         if (navConfig != null)
@@ -603,9 +603,9 @@ public class Mobs
         b.fleeForSeconds = 20f;
         b.hidingExhastionMultiplier = 1f;
         b.timeToLoseTarget = 2f;
-        b.targetDistance = 3f;
+        b.targetDistance = 15f;
         b.backUpIfTooClose = true;
-        b.useWorldMoveInChase = true;
+        // b.useWorldMoveInChase = true;
         b.canRotateWhenStandingStill = true;
         b.chaseTurnRate = 6f;
         b.fleeTurnRate = 6f;
@@ -676,7 +676,7 @@ public class Mobs
         }
         else
         {
-            Logger.LogWarning($"  No RigCreator template found and no slippery material available");
+            Logger.LogError($"  No RigCreator template found and no slippery material available");
         }
     }
 
@@ -820,7 +820,7 @@ public class Mobs
                 var rig = rigCreator.Find("Rig");
                 if (rig == null)
                 {
-                    Logger.LogWarning($"[ValidatePlayerPrefab] {monsterName}: RigCreator has no 'Rig' child. Did CustomCreateRig run on this prefab?");
+                    Logger.LogError($"[ValidatePlayerPrefab] {monsterName}: RigCreator has no 'Rig' child. Did CustomCreateRig run on this prefab?");
                 }
             }
         }
@@ -845,7 +845,7 @@ public class Mobs
         // Optional but strongly recommended for parity with the base player.
         if (prefab.GetComponent<PlayerVisor>() == null)
         {
-            Logger.LogWarning($"[ValidatePlayerPrefab] {monsterName}: PlayerVisor not found. This is optional but differs from the default player prefab.");
+            Logger.LogError($"[ValidatePlayerPrefab] {monsterName}: PlayerVisor not found. This is optional but differs from the default player prefab.");
         }
 
         if (!ok)

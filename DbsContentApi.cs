@@ -53,7 +53,7 @@ public class DbsContentApiPlugin
     {
         if (_isPatched)
         {
-            Modules.Logger.LogWarning("Already patched!");
+            Modules.Logger.LogError("Already patched!");
             return;
         }
 
@@ -80,7 +80,7 @@ public class DbsContentApiPlugin
     {
         if (!_isPatched)
         {
-            Modules.Logger.LogWarning("Already unpatched!");
+            Modules.Logger.LogError("Already unpatched!");
             return;
         }
 

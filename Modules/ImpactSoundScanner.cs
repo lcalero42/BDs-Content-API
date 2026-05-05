@@ -92,7 +92,7 @@ public class ImpactSoundScanner
 
         if (items == null || items.Count == 0)
         {
-            Debug.LogWarning("[ImpactSoundScanner] No items found in ItemDatabase.");
+            Debug.LogError("[ImpactSoundScanner] No items found in ItemDatabase.");
             return;
         }
 
@@ -255,7 +255,7 @@ public class ImpactSoundScanner
 
             if (!ImpactSounds.ContainsKey(type))
             {
-                Debug.LogWarning($"[ImpactSoundScanner] VALIDATION FAILURE: Missing sound for type '{type}'");
+                Debug.LogError($"[ImpactSoundScanner] VALIDATION FAILURE: Missing sound for type '{type}'");
                 missingCount++;
             }
         }

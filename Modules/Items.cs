@@ -314,7 +314,7 @@ public static class Items
                 return existingItem;
             }
         }
-        Debug.LogWarning("No template item found with icon!");
+        Debug.LogError("No template item found with icon!");
         return null;
     }
 

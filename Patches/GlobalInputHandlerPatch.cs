@@ -40,7 +40,7 @@ namespace DbsContentApi.Patches
                     return keyCodeSetting;
                 }
             }
-            Logger.LogWarning($"[GlobalInputHandlerPatch] No matching setting found, returning settingType itself.");
+            Logger.LogError($"[GlobalInputHandlerPatch] No matching setting found, returning settingType itself.");
             return settingType;
         }
     }
