@@ -54,4 +54,29 @@ public static class ObjectHelper
         SetLayerRecursively(tempObj, ResolveContentPollProxyLayer());
         return tempObj;
     }
+
+    /// <summary>
+    /// Creates a permanent Trigger GameObject attached to a bone with randomization.
+    /// </summary>
+    public static GameObject CreateAttachedTriggerObject(GameObject prefab, Transform parent, int frameLifetime = -1)
+    {
+        GameObject trigger = CreatePermanentTriggerObject(prefab);
+        trigger.transform.SetParent(parent);
+
+        // Random Y rotation
+        float randomYRot = Random.Range(0f, 360f);
+        trigger.transform.localRotation = Quaternion.Euler(0f, randomYRot, 0f);
+
+        // Random Y offset from -0.5 to 0.5
+        float randomYOffset = Random.Range(-0.5f, 0.5f);
+        trigger.transform.localPosition = new Vector3(0f, randomYOffset, 0f);
+
+        if (frameLifetime > 0)
+        {
+            TimedDestruction timedDestruction = trigger.AddComponent<TimedDestruction>();
+            timedDestruction.frames = frameLifetime;
+        }
+
+        return trigger;
+    }
 }
