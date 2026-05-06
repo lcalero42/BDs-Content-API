@@ -16,7 +16,7 @@ namespace DbsContentApi.Patches
             Logger.Log($"[SettingsHandlerPatch] Registering {DbsContentApiPlugin._inputs.Count} custom inputs.");
             foreach (BaseCWInput input in DbsContentApiPlugin._inputs)
             {
-                __instance.settings.Add(input);
+                __instance.AddSetting(input);
                 Logger.Log($"[SettingsHandlerPatch] Registered input: {input.GetType().Name}");
             }
         }

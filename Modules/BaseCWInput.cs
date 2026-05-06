@@ -9,7 +9,7 @@ public abstract class BaseCWInput : KeyCodeSetting
     {
         if (_disabled) return;
         
-        KeyCode key = (KeyCode)Value == KeyCode.None ? GetDefaultKey() : (KeyCode)Value;
+        KeyCode key = Keycode();
         
         if (Input.GetKeyDown(key))
             OnKeyDown(player);
@@ -18,6 +18,9 @@ public abstract class BaseCWInput : KeyCodeSetting
         else if (Input.GetKey(key))
             OnHeld(player);
     }
+    protected abstract override KeyCode GetDefaultKey();
+    public override int GetDefaultValue() => (int)GetDefaultKey();
+
     protected abstract void OnKeyDown(Player player);
 
     protected abstract void OnKeyUp(Player player);

@@ -7,7 +7,7 @@ namespace DbsContentApi.Patches
     {
         [HarmonyPatch(nameof(Player.PlayerInput.SampeInput))]
         [HarmonyPostfix]
-        private static void SampeInput(Player player)
+        private static void SampeInput(Player.PlayerData data, Player player)
         {
             if (player != Player.localPlayer) return; // Only handle for local player
 
