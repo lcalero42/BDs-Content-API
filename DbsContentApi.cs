@@ -38,6 +38,7 @@ public class DbsContentApiPlugin
     /// Global list of registered custom monsters.
     /// </summary>
     public static List<GameObject> customMonsters = new List<GameObject>();
+    public static List<CustomMap> customMaps = new List<CustomMap>();
     public static List<Action> customItemsRegistrationCallbacks = new List<Action>();
     public static List<ContentEvent> customContentEvents = new List<ContentEvent>();
 
@@ -45,9 +46,16 @@ public class DbsContentApiPlugin
     /// If true, only modded monsters will spawn in the round.
     /// </summary>
     public static bool moddedMobsOnly = false;
+    public static bool moddedMapsOnly = false;
     public static bool allItemsFree = false;
 
     internal static List<BaseCWInput> _inputs = new List<BaseCWInput>();
+
+    public static void RegisterCustomMap(CustomMap map)
+    {
+        customMaps.Add(map);
+        Modules.Logger.Log($"[Maps] Registered custom map: {map.DisplayName}");
+    }
 
     private void PatchAll()
     {
@@ -101,6 +109,10 @@ public class DbsContentApiPlugin
     public static void SetModdedMobsOnly(bool value)
     {
         moddedMobsOnly = value;
+    }
+    public static void SetModdedMapsOnly(bool value)
+    {
+        moddedMapsOnly = value;
     }
     public static void SetAllItemsFree(bool value)
     {
