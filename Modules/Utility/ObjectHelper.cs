@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace DbsContentApi.Modules.Utility;
 
@@ -53,6 +54,47 @@ public static class ObjectHelper
         GameObject tempObj = Object.Instantiate(prefab);
         SetLayerRecursively(tempObj, ResolveContentPollProxyLayer());
         return tempObj;
+    }
+
+    /// <summary>
+    /// Finds all MeshRenderers and SkinnedMeshRenderers on <paramref name="go"/> and its children,
+    /// then swaps each material's shader to match the current scene:
+    /// <list type="bullet">
+    ///   <item>SurfaceScene — replaces the "World" shader with "NiceShader"</item>
+    ///   <item>Old world    — replaces the "NiceShader" shader with "World"</item>
+    /// </list>
+    /// Materials that already use the correct shader are left untouched.
+    /// </summary>
+    public static void FixShadersForCurrentScene(GameObject go)
+    {
+        bool isSurface = SceneManager.GetActiveScene().name == "SurfaceScene";
+
+        string fromShaderName = isSurface ? "World" : "NiceShader";
+        string toShaderName   = isSurface ? "NiceShader" : "World";
+
+        Shader toShader = Shader.Find(toShaderName);
+        if (toShader == null)
+        {
+            Logger.LogError($"[ObjectHelper] Could not find shader \"{toShaderName}\".");
+            return;
+        }
+
+        foreach (Renderer renderer in go.GetComponentsInChildren<Renderer>(true))
+        {
+            Material[] mats = renderer.materials;
+            bool changed = false;
+            for (int i = 0; i < mats.Length; i++)
+            {
+                if (mats[i] != null && mats[i].shader != null &&
+                    mats[i].shader.name == fromShaderName)
+                {
+                    mats[i].shader = toShader;
+                    changed = true;
+                }
+            }
+            if (changed)
+                renderer.materials = mats;
+        }
     }
 
     /// <summary>
