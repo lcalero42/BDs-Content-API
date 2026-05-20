@@ -1,4 +1,3 @@
-﻿using DbsContentApi.Modules;
 using HarmonyLib;
 using System.Collections;
 using Zorro.Settings;
@@ -11,36 +10,36 @@ namespace DbsContentApi.Patches
         [HarmonyPostfix]
         static void OnCreatedPatch(GlobalInputHandler __instance)
         {
-            Logger.Log("[GlobalInputHandlerPatch] OnCreated triggered.");
-            Logger.Log($"[GlobalInputHandlerPatch] Found {DbsContentApiPlugin._inputs.Count} registered inputs.");
+            ApiLog.Log("[GlobalInputHandlerPatch] OnCreated triggered.");
+            ApiLog.Log($"[GlobalInputHandlerPatch] Found {DbsContentApiPlugin._inputs.Count} registered inputs.");
             __instance.StartCoroutine(setModdedKeybinds());
         }
         private static IEnumerator setModdedKeybinds()
         {
-            Logger.Log("[GlobalInputHandlerPatch] setModdedKeybinds started.");
+            ApiLog.Log("[GlobalInputHandlerPatch] setModdedKeybinds started.");
             foreach (var keybind in DbsContentApiPlugin._inputs)
             {
                 yield return null;
-                Logger.Log($"[GlobalInputHandlerPatch] Setting keybind for: {keybind.GetType().Name}");
+                ApiLog.Log($"[GlobalInputHandlerPatch] Setting keybind for: {keybind.GetType().Name}");
                 var setting = GetSetting(keybind);
-                Logger.Log($"[GlobalInputHandlerPatch] Got setting: {setting?.GetType().Name ?? "null"}");
+                ApiLog.Log($"[GlobalInputHandlerPatch] Got setting: {setting?.GetType().Name ?? "null"}");
                 keybind.inputKey.SetKeybind(setting);
             }
-            Logger.Log("[GlobalInputHandlerPatch] setModdedKeybinds finished.");
+            ApiLog.Log("[GlobalInputHandlerPatch] setModdedKeybinds finished.");
         }
         private static KeyCodeSetting GetSetting(BaseCWInput settingType)
         {
-            Logger.Log($"[GlobalInputHandlerPatch] Looking for setting of type: {settingType.GetType().Name}");
-            Logger.Log($"[GlobalInputHandlerPatch] Total settings: {GameHandler.Instance.SettingsHandler.settings.Count}");
+            ApiLog.Log($"[GlobalInputHandlerPatch] Looking for setting of type: {settingType.GetType().Name}");
+            ApiLog.Log($"[GlobalInputHandlerPatch] Total settings: {GameHandler.Instance.SettingsHandler.settings.Count}");
             foreach (Setting setting in GameHandler.Instance.SettingsHandler.settings)
             {
                 if (setting is KeyCodeSetting keyCodeSetting && keyCodeSetting == settingType)
                 {
-                    Logger.Log($"[GlobalInputHandlerPatch] Found matching setting.");
+                    ApiLog.Log($"[GlobalInputHandlerPatch] Found matching setting.");
                     return keyCodeSetting;
                 }
             }
-            Logger.LogError($"[GlobalInputHandlerPatch] No matching setting found, returning settingType itself.");
+            ApiLog.LogError($"[GlobalInputHandlerPatch] No matching setting found, returning settingType itself.");
             return settingType;
         }
     }

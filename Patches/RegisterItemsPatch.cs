@@ -1,10 +1,9 @@
-using DbsContentApi.Modules;
 using HarmonyLib;
 
 namespace DbsContentApi.Patches;
 
 [HarmonyPatch(typeof(ShopViewScreen))]
-public static class ShopViewScreenPatch
+internal static class ShopViewScreenPatch
 {
 	public static bool isRegistered = false;
 	[HarmonyPatch("Awake"), HarmonyPostfix]
@@ -16,13 +15,13 @@ public static class ShopViewScreenPatch
 
 		GameMaterials.InitMaterials();
 
-		Modules.Logger.Log("RegisterItemsPatch: Registering custom items.");
+		ApiLog.Log("RegisterItemsPatch: Registering custom items.");
 		DbsContentApiPlugin.customItemsRegistrationCallbacks.ForEach(callback => callback());
 
 		if (DbsContentApiPlugin.allItemsFree)
 		{
-			Modules.Logger.Log("RegisterItemsPatch: Setting all items free.");
-			Modules.Items.SetAllItemsFree();
+			ApiLog.Log("RegisterItemsPatch: Setting all items free.");
+			Items.SetAllItemsFree();
 		}
 	}
 }

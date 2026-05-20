@@ -1,17 +1,13 @@
 using HarmonyLib;
 using UnityEngine;
-using DbsContentApi.Modules;
 
 namespace DbsContentApi.Patches;
-
-
-using Logger = DbsContentApi.Modules.Logger;
 /// <summary>
 /// Harmony patches to enable custom map loading and selection.
 /// Ported from CustomMapTest.
 /// </summary>
 [HarmonyPatch(typeof(Level))]
-public static class SpawnMapPatch
+internal static class SpawnMapPatch
 {
     [HarmonyPatch("SetupFinished")]
     [HarmonyPrefix]
@@ -20,24 +16,24 @@ public static class SpawnMapPatch
         // Custom level indices start at 3
         if (SurfaceNetworkHandler.RoomStats.LevelToPlay < 3)
         {
-            Logger.Log($"[Maps] Level.SetupFinished: LevelToPlay is {SurfaceNetworkHandler.RoomStats.LevelToPlay}, skipping custom map loading.");
+            ApiLog.Log($"[Maps] Level.SetupFinished: LevelToPlay is {SurfaceNetworkHandler.RoomStats.LevelToPlay}, skipping custom map loading.");
             return true;
         }
 
         if (!Level.currentLevel.levelIsReady)
         {
-            Logger.Log($"[Maps] Level.SetupFinished: LevelToPlay is {SurfaceNetworkHandler.RoomStats.LevelToPlay}, adding CustomMapLoader.");
+            ApiLog.Log($"[Maps] Level.SetupFinished: LevelToPlay is {SurfaceNetworkHandler.RoomStats.LevelToPlay}, adding CustomMapLoader.");
             var loader = PhotonGameLobbyHandler.Instance.gameObject.AddComponent<CustomMapLoader>();
             int customMapIndex = SurfaceNetworkHandler.RoomStats.LevelToPlay - 3;
 
             if (customMapIndex >= 0 && customMapIndex < DbsContentApiPlugin.customMaps.Count)
             {
                 loader.Map = DbsContentApiPlugin.customMaps[customMapIndex];
-                Logger.Log($"[Maps] Assigned map: {loader.Map.DisplayName}");
+                ApiLog.Log($"[Maps] Assigned map: {loader.Map.DisplayName}");
             }
             else
             {
-                Logger.LogError($"[Maps] Custom map index {customMapIndex} out of range! Total custom maps: {DbsContentApiPlugin.customMaps.Count}");
+                ApiLog.LogError($"[Maps] Custom map index {customMapIndex} out of range! Total custom maps: {DbsContentApiPlugin.customMaps.Count}");
             }
         }
 
@@ -46,7 +42,7 @@ public static class SpawnMapPatch
 }
 
 [HarmonyPatch(typeof(RoomStatsHolder))]
-public static class ChooseMapPatch
+internal static class ChooseMapPatch
 {
     [HarmonyPatch("NewMapToPlay")]
     [HarmonyPrefix]
@@ -54,11 +50,11 @@ public static class ChooseMapPatch
     {
         if (DbsContentApiPlugin.customMaps.Count == 0)
         {
-            Logger.Log("[Maps] No custom maps registered, using vanilla selection.");
+            ApiLog.Log("[Maps] No custom maps registered, using vanilla selection.");
             return true;
         }
 
-        Logger.Log($"[Maps] Choosing new map. Custom maps registered: {DbsContentApiPlugin.customMaps.Count}. Modded only: {DbsContentApiPlugin.moddedMapsOnly}");
+        ApiLog.Log($"[Maps] Choosing new map. Custom maps registered: {DbsContentApiPlugin.customMaps.Count}. Modded only: {DbsContentApiPlugin.moddedMapsOnly}");
 
         // total = vanilla (3) + custom
         int totalMaps = 3 + DbsContentApiPlugin.customMaps.Count;
@@ -79,12 +75,12 @@ public static class ChooseMapPatch
 
         if (nextLevel < 3)
         {
-            Logger.Log($"[Maps] Selected vanilla map: {nextLevel}");
+            ApiLog.Log($"[Maps] Selected vanilla map: {nextLevel}");
         }
         else
         {
             var map = DbsContentApiPlugin.customMaps[nextLevel - 3];
-            Logger.Log($"[Maps] Selected custom map: {map.DisplayName} (Index: {nextLevel})");
+            ApiLog.Log($"[Maps] Selected custom map: {map.DisplayName} (Index: {nextLevel})");
         }
 
         return false;
@@ -92,7 +88,7 @@ public static class ChooseMapPatch
 }
 
 [HarmonyPatch(typeof(DivingBell))]
-public static class FacilityTemplatePatch
+internal static class FacilityTemplatePatch
 {
     [HarmonyPatch("GetUndergroundSceneName")]
     [HarmonyPrefix]
@@ -100,7 +96,7 @@ public static class FacilityTemplatePatch
     {
         if (SurfaceNetworkHandler.RoomStats.LevelToPlay >= 3)
         {
-            Logger.Log("[Maps] Forcing underground scene name to FactoryScene for custom level.");
+            ApiLog.Log("[Maps] Forcing underground scene name to FactoryScene for custom level.");
             __result = "FactoryScene";
             return false;
         }
@@ -109,7 +105,7 @@ public static class FacilityTemplatePatch
 }
 
 [HarmonyPatch(typeof(BigNumbers))]
-public static class MultiplierPatches
+internal static class MultiplierPatches
 {
     [HarmonyPatch("GetMonsterBudgetForDayFirstWave")]
     [HarmonyPostfix]
@@ -119,7 +115,7 @@ public static class MultiplierPatches
         {
             int old = __result;
             __result = (int)(__result * CustomMapLoader.multiplierMonster);
-            Logger.Log($"[Maps] Applied monster multiplier (First Wave): {old} -> {__result} (x{CustomMapLoader.multiplierMonster})");
+            ApiLog.Log($"[Maps] Applied monster multiplier (First Wave): {old} -> {__result} (x{CustomMapLoader.multiplierMonster})");
         }
     }
 
@@ -131,7 +127,7 @@ public static class MultiplierPatches
         {
             int old = __result;
             __result = (int)(__result * CustomMapLoader.multiplierMonster);
-            Logger.Log($"[Maps] Applied monster multiplier (Second Wave): {old} -> {__result} (x{CustomMapLoader.multiplierMonster})");
+            ApiLog.Log($"[Maps] Applied monster multiplier (Second Wave): {old} -> {__result} (x{CustomMapLoader.multiplierMonster})");
         }
     }
 
@@ -143,7 +139,7 @@ public static class MultiplierPatches
         {
             int old = __result;
             __result = (int)(__result * CustomMapLoader.multiplierTool);
-            Logger.Log($"[Maps] Applied tool multiplier: {old} -> {__result} (x{CustomMapLoader.multiplierTool})");
+            ApiLog.Log($"[Maps] Applied tool multiplier: {old} -> {__result} (x{CustomMapLoader.multiplierTool})");
         }
     }
 
@@ -155,13 +151,13 @@ public static class MultiplierPatches
         {
             int old = __result;
             __result = (int)(__result * CustomMapLoader.multiplierArtifact);
-            Logger.Log($"[Maps] Applied artifact multiplier: {old} -> {__result} (x{CustomMapLoader.multiplierArtifact})");
+            ApiLog.Log($"[Maps] Applied artifact multiplier: {old} -> {__result} (x{CustomMapLoader.multiplierArtifact})");
         }
     }
 }
 
 [HarmonyPatch(typeof(Player))]
-public static class PlayerHeightPatch
+internal static class PlayerHeightPatch
 {
     [HarmonyPatch("Center")]
     [HarmonyPostfix]
@@ -171,7 +167,7 @@ public static class PlayerHeightPatch
         {
             if (__result.y > 100f)
             {
-                Logger.Log($"[Maps] Capping player height: {__result.y} -> 100f");
+                ApiLog.Log($"[Maps] Capping player height: {__result.y} -> 100f");
                 __result.y = 100f;
             }
         }
@@ -179,7 +175,7 @@ public static class PlayerHeightPatch
 }
 
 [HarmonyPatch(typeof(VideoCamera))]
-public static class VideoOcclusionPatch
+internal static class VideoOcclusionPatch
 {
     [HarmonyPatch("ConfigItem")]
     [HarmonyPostfix]
@@ -187,7 +183,7 @@ public static class VideoOcclusionPatch
     {
         if (SurfaceNetworkHandler.RoomStats.LevelToPlay >= 3)
         {
-            Logger.Log("[Maps] Disabling occlusion culling for VideoCamera on custom level.");
+            ApiLog.Log("[Maps] Disabling occlusion culling for VideoCamera on custom level.");
             __instance.m_camera.useOcclusionCulling = false;
         }
     }

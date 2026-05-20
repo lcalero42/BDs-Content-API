@@ -4,7 +4,7 @@ using BepInEx;
 using Photon.Pun;
 using System.Reflection;
 
-namespace DbsContentApi.Modules;
+namespace DbsContentApi;
 
 /// <summary>
 /// Utility class for loading assets from AssetBundles.
@@ -14,8 +14,20 @@ public static class ContentLoader
     /// <summary>
     /// Loads an AssetBundle from the plugin's directory.
     /// </summary>
+    /// <param name="assembly">The assembly whose directory to search.</param>
     /// <param name="bundleName">The filename of the bundle to load.</param>
     /// <returns>The loaded AssetBundle.</returns>
+    public static AssetBundle? LoadAssetBundle(Assembly assembly, string bundleName)
+    {
+        return LoadAssetBundle(assembly.Location, bundleName);
+    }
+
+    /// <summary>
+    /// Loads an AssetBundle from the directory containing the given assembly.
+    /// </summary>
+    /// <param name="assemblyLocation">Full path to the assembly DLL whose directory contains the bundle.</param>
+    /// <param name="bundleName">The filename of the bundle to load.</param>
+    /// <returns>The loaded AssetBundle, or <c>null</c> if loading failed.</returns>
     public static AssetBundle LoadAssetBundle(string assemblyLocation, string bundleName)
     {
         // Get the directory where the current DLL is located

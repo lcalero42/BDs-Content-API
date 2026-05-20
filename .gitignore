@@ -7,3 +7,5 @@ DbsContentApi.zip
 config.json
 steam-build/build-steam-package.bat
 steam-build/build
+_site
+api

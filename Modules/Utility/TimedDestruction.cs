@@ -1,11 +1,11 @@
 using UnityEngine;
 
-namespace DbsContentApi.Modules.Utility;
+namespace DbsContentApi;
 
 /// <summary>
 /// Disables its GameObject after a specified number of rendered frames.
 /// </summary>
-public class TimedDestruction : MonoBehaviour
+internal class TimedDestruction : MonoBehaviour
 {
     public int frames = 180;
 

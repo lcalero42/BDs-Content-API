@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace DbsContentApi.Modules.Utility;
+namespace DbsContentApi;
 
 /// <summary>
 /// Helper class for managing temporary game objects.
@@ -35,6 +35,7 @@ public static class ObjectHelper
     /// Creates a temporary GameObject that will automatically disable itself after a frame budget.
     /// </summary>
     /// <param name="frameCount">How many Update frames the object should remain active.</param>
+    /// <param name="prefab">The trigger prefab to instantiate (e.g. <see cref="DbsContentApiPlugin.TemporaryContentTriggerPrefab"/>).</param>
     /// <returns>The created GameObject.</returns>
     public static GameObject CreateTemporaryTriggerObject(int frameCount, GameObject prefab)
     {
@@ -46,8 +47,9 @@ public static class ObjectHelper
     }
 
     /// <summary>
-    /// Creates a permanent Trigger GameObject
+    /// Creates a permanent trigger GameObject from the given prefab.
     /// </summary>
+    /// <param name="prefab">The trigger prefab to instantiate.</param>
     /// <returns>The created GameObject.</returns>
     public static GameObject CreatePermanentTriggerObject(GameObject prefab)
     {
@@ -75,7 +77,7 @@ public static class ObjectHelper
         Shader toShader = Shader.Find(toShaderName);
         if (toShader == null)
         {
-            Logger.LogError($"[ObjectHelper] Could not find shader \"{toShaderName}\".");
+            ApiLog.LogError($"[ObjectHelper] Could not find shader \"{toShaderName}\".");
             return;
         }
 
@@ -98,8 +100,12 @@ public static class ObjectHelper
     }
 
     /// <summary>
-    /// Creates a permanent Trigger GameObject attached to a bone with randomization.
+    /// Creates a permanent trigger GameObject attached to a bone with randomization.
     /// </summary>
+    /// <param name="prefab">The trigger prefab to instantiate.</param>
+    /// <param name="parent">The bone transform to attach the trigger to.</param>
+    /// <param name="frameLifetime">When greater than 0, destroys the trigger after this many frames.</param>
+    /// <returns>The created and parented trigger GameObject.</returns>
     public static GameObject CreateAttachedTriggerObject(GameObject prefab, Transform parent, int frameLifetime = -1)
     {
         GameObject trigger = CreatePermanentTriggerObject(prefab);

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using DbsContentApi.Modules;
+using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
 
@@ -12,6 +12,8 @@ namespace DbsContentApi;
 [ContentWarningPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_VERSION, false)]
 public class DbsContentApiPlugin
 {
+    private const string ApiAssetBundleFileName = "dbscontentapi";
+
     private bool _isPatched;
 
     static DbsContentApiPlugin()
@@ -25,7 +27,41 @@ public class DbsContentApiPlugin
     /// </summary>
     public DbsContentApiPlugin()
     {
-        Modules.Logger.Log($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
+        LoadApiAssetBundle();
+        ApiLog.Log($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
+    }
+
+    /// <summary>
+    /// Asset bundle shipped alongside DbsContentApi.dll (filename: dbscontentapi, no extension).
+    /// </summary>
+    internal static AssetBundle? ApiAssetBundle { get; private set; }
+
+    /// <summary>
+    /// Prefab used for temporary content-trigger volumes (loaded from the dbscontentapi bundle).
+    /// </summary>
+    public static GameObject? TemporaryContentTriggerPrefab { get; private set; }
+
+    private static void LoadApiAssetBundle()
+    {
+        string location = Assembly.GetExecutingAssembly().Location;
+        ApiAssetBundle = ContentLoader.LoadAssetBundle(location, ApiAssetBundleFileName);
+        if (ApiAssetBundle == null)
+        {
+            ApiLog.LogError(
+                $"DbsContentApi: failed to load asset bundle '{ApiAssetBundleFileName}' next to {location}");
+            return;
+        }
+
+        try
+        {
+            TemporaryContentTriggerPrefab =
+                ContentLoader.LoadPrefabFromBundle(ApiAssetBundle, "TemporaryContentProviderCube.prefab");
+        }
+        catch (Exception e)
+        {
+            ApiLog.LogError(
+                $"DbsContentApi: failed to load prefab TemporaryContentProviderCube from bundle: {e.Message}");
+        }
     }
 
     private Harmony? Harmony { get; set; }
@@ -34,38 +70,32 @@ public class DbsContentApiPlugin
     /// </summary>
     public static DbsContentApiPlugin Instance { get; }
 
-    /// <summary>
-    /// Global list of registered custom monsters.
-    /// </summary>
-    public static List<GameObject> customMonsters = new List<GameObject>();
-    public static List<CustomMap> customMaps = new List<CustomMap>();
-    public static List<Action> customItemsRegistrationCallbacks = new List<Action>();
-    public static List<ContentEvent> customContentEvents = new List<ContentEvent>();
+    internal static List<GameObject> customMonsters = new();
+    internal static List<CustomMap> customMaps = new();
+    internal static List<Action> customItemsRegistrationCallbacks = new();
+    internal static List<ContentEvent> customContentEvents = new();
 
-    /// <summary>
-    /// If true, only modded monsters will spawn in the round.
-    /// </summary>
-    public static bool moddedMobsOnly = false;
-    public static bool moddedMapsOnly = false;
-    public static bool allItemsFree = false;
+    internal static bool moddedMobsOnly;
+    internal static bool moddedMapsOnly;
+    internal static bool allItemsFree;
 
-    internal static List<BaseCWInput> _inputs = new List<BaseCWInput>();
+    internal static List<BaseCWInput> _inputs = new();
 
-    public static void RegisterCustomMap(CustomMap map)
+    internal static void RegisterCustomMap(CustomMap map)
     {
         customMaps.Add(map);
-        Modules.Logger.Log($"[Maps] Registered custom map: {map.DisplayName}");
+        ApiLog.Log($"[Maps] Registered custom map: {map.DisplayName}");
     }
 
     private void PatchAll()
     {
         if (_isPatched)
         {
-            Modules.Logger.LogError("Already patched!");
+            ApiLog.LogError("Already patched!");
             return;
         }
 
-        Modules.Logger.Log("Patching...");
+        ApiLog.Log("Patching...");
 
         Harmony ??= new Harmony(MyPluginInfo.PLUGIN_GUID);
 
@@ -73,11 +103,11 @@ public class DbsContentApiPlugin
         {
             Harmony.PatchAll();
             _isPatched = true;
-            Modules.Logger.Log("Patched!");
+            ApiLog.Log("Patched!");
         }
         catch (Exception e)
         {
-            Modules.Logger.LogError($"Failed to patch: {e}");
+            ApiLog.LogError($"Failed to patch: {e}");
         }
     }
 
@@ -88,32 +118,46 @@ public class DbsContentApiPlugin
     {
         if (!_isPatched)
         {
-            Modules.Logger.LogError("Already unpatched!");
+            ApiLog.LogError("Already unpatched!");
             return;
         }
 
-        Modules.Logger.Log("Unpatching...");
+        ApiLog.Log("Unpatching...");
 
         try
         {
             Harmony?.UnpatchSelf();
             _isPatched = false;
-            Modules.Logger.Log("Unpatched!");
+            ApiLog.Log("Unpatched!");
         }
         catch (Exception e)
         {
-            Modules.Logger.LogError($"Failed to unpatch: {e}");
+            ApiLog.LogError($"Failed to unpatch: {e}");
         }
     }
 
+    /// <summary>
+    /// When enabled, only custom monsters registered via <see cref="Mobs.RegisterMonster"/> are spawned during rounds.
+    /// </summary>
+    /// <param name="value"><c>true</c> to restrict spawning to modded monsters only.</param>
     public static void SetModdedMobsOnly(bool value)
     {
         moddedMobsOnly = value;
     }
+
+    /// <summary>
+    /// When enabled, only custom maps registered via <see cref="Maps.RegisterMap"/> are selected for rounds.
+    /// </summary>
+    /// <param name="value"><c>true</c> to restrict map selection to modded maps only.</param>
     public static void SetModdedMapsOnly(bool value)
     {
         moddedMapsOnly = value;
     }
+
+    /// <summary>
+    /// When enabled, all items in the shop are free (price set to 0) when the shop initializes.
+    /// </summary>
+    /// <param name="value"><c>true</c> to make all shop items free.</param>
     public static void SetAllItemsFree(bool value)
     {
         allItemsFree = value;

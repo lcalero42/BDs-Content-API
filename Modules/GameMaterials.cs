@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace DbsContentApi.Modules;
+namespace DbsContentApi;
 
 /// <summary>
-/// Enum representing the original names of materials found in the game.
+/// Enum representing the original Unity material asset names found in Content Warning.
+/// Each member maps to an in-game <see cref="Material"/> loaded at runtime by <see cref="GameMaterials.InitMaterials"/>.
+/// Members with inline descriptions indicate common visual appearance; undocumented members use the asset name as-is.
 /// </summary>
 public enum GameMaterial
 {
@@ -488,7 +490,8 @@ public enum GameMaterial
 }
 
 /// <summary>
-/// Enum representing descriptive names for materials.
+/// Enum representing human-readable aliases for commonly used <see cref="GameMaterial"/> values.
+/// Use these when the exact asset name is unknown; mapped via <see cref="GameMaterials.GetMaterial(DescriptiveMaterial)"/>.
 /// </summary>
 public enum DescriptiveMaterial
 {
@@ -602,10 +605,20 @@ public enum DescriptiveMaterial
     RED_4
 }
 
+/// <summary>
+/// Runtime material lookup and application API for Content Warning mod content.
+/// Call <see cref="InitMaterials"/> (done automatically when the shop loads) before applying materials,
+/// or use <see cref="ApplyOnLoad"/> to defer application until materials are available.
+/// </summary>
 public static class GameMaterials
 {
+    /// <summary>Cached game materials keyed by <see cref="GameMaterial"/>.</summary>
     public static readonly Dictionary<GameMaterial, Material> _materials = new();
+
+    /// <summary>Maps Unity material asset names to <see cref="GameMaterial"/> values.</summary>
     public static readonly Dictionary<string, GameMaterial> _nameToEnum = new();
+
+    /// <summary>Maps <see cref="DescriptiveMaterial"/> aliases to <see cref="GameMaterial"/> values.</summary>
     public static readonly Dictionary<DescriptiveMaterial, GameMaterial> _descriptiveToOriginal = new()
     {
         { DescriptiveMaterial.TRANSPARENT, GameMaterial.M_Debug },
@@ -1110,7 +1123,22 @@ public static class GameMaterials
         _nameToEnum["M_Heal"] = GameMaterial.M_Heal;
     }
 
+    /// <summary>
+    /// Fired after <see cref="InitMaterials"/> finishes loading all cached materials.
+    /// Subscribers registered via <see cref="ApplyOnLoad"/> are invoked on this event.
+    /// </summary>
     public static event Action? OnMaterialsLoaded;
+
+    /// <summary>
+    /// Defers material application until game materials have been loaded.
+    /// </summary>
+    /// <param name="target">The GameObject to apply the material to.</param>
+    /// <param name="material">The game material to apply.</param>
+    /// <param name="recursive">When <c>true</c>, applies to all child renderers.</param>
+    public static void ApplyOnLoad(GameObject target, GameMaterial material, bool recursive = false)
+    {
+        OnMaterialsLoaded += () => ApplyMaterial(target, material, recursive);
+    }
 
     /// <summary>
     /// Loads all materials from the game resources.
@@ -1129,8 +1157,8 @@ public static class GameMaterials
             }
         }
 
-        Logger.Log($"Found {uniqueMaterials.Count} unique materials in game resources");
-        Logger.Log($"Unique material names: {string.Join(", ", uniqueMaterialNames.ToList())}");
+        ApiLog.Log($"Found {uniqueMaterials.Count} unique materials in game resources");
+        ApiLog.Log($"Unique material names: {string.Join(", ", uniqueMaterialNames.ToList())}");
 
         foreach (Material mat in uniqueMaterials)
         {
@@ -1143,16 +1171,26 @@ public static class GameMaterials
             }
             else
             {
-                Logger.LogError($"Could not find material: {mat.name} in _nameToEnum, skipping");
+                ApiLog.LogError($"Could not find material: {mat.name} in _nameToEnum, skipping");
             }
         }
-        Logger.Log($"Loaded {_materials.Count} materials");
+        ApiLog.Log($"Loaded {_materials.Count} materials");
 
         OnMaterialsLoaded?.Invoke();
     }
 
+    /// <summary>
+    /// Retrieves a cached game material by its enum value.
+    /// </summary>
+    /// <param name="type">The material to look up.</param>
+    /// <returns>The cached <see cref="Material"/>, or <c>null</c> if not yet loaded.</returns>
     public static Material GetMaterial(GameMaterial type) => _materials.TryGetValue(type, out var mat) ? mat : null!;
 
+    /// <summary>
+    /// Retrieves a cached game material by its descriptive alias.
+    /// </summary>
+    /// <param name="type">The descriptive material alias.</param>
+    /// <returns>The cached <see cref="Material"/>, or <c>null</c> if not yet loaded or unmapped.</returns>
     public static Material GetMaterial(DescriptiveMaterial type)
     {
         if (_descriptiveToOriginal.TryGetValue(type, out var original))
@@ -1162,17 +1200,195 @@ public static class GameMaterials
         return null!;
     }
 
+    /// <summary>
+    /// Applies a game material to a target GameObject's renderers.
+    /// </summary>
+    /// <param name="target">The root GameObject.</param>
+    /// <param name="type">The material to apply.</param>
+    /// <param name="deepApply">When <c>true</c>, applies to all child renderers.</param>
     public static void ApplyMaterial(GameObject target, GameMaterial type, bool deepApply = true)
     {
         Material mat = GetMaterial(type);
         if (mat != null) ApplyToTarget(target, mat, deepApply);
     }
 
+    /// <summary>
+    /// Applies a descriptive material alias to a target GameObject's renderers.
+    /// </summary>
+    /// <param name="target">The root GameObject.</param>
+    /// <param name="type">The descriptive material alias.</param>
+    /// <param name="deepApply">When <c>true</c>, applies to all child renderers.</param>
     public static void ApplyMaterial(GameObject target, DescriptiveMaterial type, bool deepApply = true)
     {
         Material mat = GetMaterial(type);
         if (mat != null) ApplyToTarget(target, mat, deepApply);
     }
+
+    /// <summary>
+    /// Applies a material to a child object specified by hierarchy path (see <see cref="Transform.Find"/>).
+    /// </summary>
+    public static void ApplyToChild(GameObject root, string childPath, GameMaterial material, bool deep = false)
+    {
+        var child = root.transform.Find(childPath);
+        if (child != null) ApplyMaterial(child.gameObject, material, deep);
+        else ApiLog.Log($"Warning: GameMaterials.ApplyToChild: Child path '{childPath}' not found on '{root.name}'");
+    }
+
+    /// <summary>
+    /// Applies a descriptive material to a child object specified by hierarchy path.
+    /// </summary>
+    public static void ApplyToChild(GameObject root, string childPath, DescriptiveMaterial material, bool deep = false)
+    {
+        var child = root.transform.Find(childPath);
+        if (child != null) ApplyMaterial(child.gameObject, material, deep);
+        else ApiLog.Log($"Warning: GameMaterials.ApplyToChild: Child path '{childPath}' not found on '{root.name}'");
+    }
+
+    /// <inheritdoc cref="ApplyToChild(GameObject, string, GameMaterial, bool)"/>
+    public static void ApplyMaterial(GameObject root, string childPath, GameMaterial material, bool deep = false)
+        => ApplyToChild(root, childPath, material, deep);
+
+    /// <inheritdoc cref="ApplyToChild(GameObject, string, DescriptiveMaterial, bool)"/>
+    public static void ApplyMaterial(GameObject root, string childPath, DescriptiveMaterial material, bool deep = false)
+        => ApplyToChild(root, childPath, material, deep);
+
+    /// <summary>
+    /// Sets multiple materials on a renderer.
+    /// </summary>
+    public static void SetMaterials(Renderer renderer, params GameMaterial[] materials)
+    {
+        if (renderer == null) return;
+        Material[] newMats = new Material[materials.Length];
+        for (int i = 0; i < materials.Length; i++)
+        {
+            newMats[i] = GetMaterial(materials[i]);
+        }
+        renderer.materials = newMats;
+    }
+
+    /// <summary>
+    /// Sets multiple descriptive materials on a renderer.
+    /// </summary>
+    public static void SetMaterials(Renderer renderer, params DescriptiveMaterial[] materials)
+    {
+        if (renderer == null) return;
+        Material[] newMats = new Material[materials.Length];
+        for (int i = 0; i < materials.Length; i++)
+        {
+            newMats[i] = GetMaterial(materials[i]);
+        }
+        renderer.materials = newMats;
+    }
+
+    /// <summary>
+    /// Sets a material at a specific slot index on a renderer.
+    /// </summary>
+    public static void SetMaterialAt(Renderer renderer, int slot, GameMaterial material)
+    {
+        if (renderer == null) return;
+        Material[] mats = renderer.materials;
+        if (slot >= 0 && slot < mats.Length)
+        {
+            mats[slot] = GetMaterial(material);
+            renderer.materials = mats;
+        }
+    }
+
+    /// <summary>
+    /// Sets a descriptive material at a specific slot index on a renderer.
+    /// </summary>
+    public static void SetMaterialAt(Renderer renderer, int slot, DescriptiveMaterial material)
+    {
+        if (renderer == null) return;
+        Material[] mats = renderer.materials;
+        if (slot >= 0 && slot < mats.Length)
+        {
+            mats[slot] = GetMaterial(material);
+            renderer.materials = mats;
+        }
+    }
+
+    /// <summary>
+    /// Sets a material at a specific slot index on a target GameObject's renderer.
+    /// </summary>
+    public static void SetMaterialAt(GameObject target, int slot, GameMaterial material)
+    {
+        var r = target.GetComponent<Renderer>();
+        if (r != null) SetMaterialAt(r, slot, material);
+    }
+
+    /// <summary>
+    /// Sets a descriptive material at a specific slot index on a target GameObject's renderer.
+    /// </summary>
+    public static void SetMaterialAt(GameObject target, int slot, DescriptiveMaterial material)
+    {
+        var r = target.GetComponent<Renderer>();
+        if (r != null) SetMaterialAt(r, slot, material);
+    }
+
+    /// <summary>
+    /// Applies a material to a ParticleSystem's renderer.
+    /// </summary>
+    public static void ApplyMaterial(ParticleSystem ps, GameMaterial material, bool trailMaterial = false)
+    {
+        if (ps == null) return;
+        var psr = ps.GetComponent<ParticleSystemRenderer>();
+        if (psr == null) return;
+        Material mat = GetMaterial(material);
+        if (trailMaterial) psr.trailMaterial = mat;
+        else psr.material = mat;
+    }
+
+    /// <summary>
+    /// Applies a descriptive material to a ParticleSystem's renderer.
+    /// </summary>
+    public static void ApplyMaterial(ParticleSystem ps, DescriptiveMaterial material, bool trailMaterial = false)
+    {
+        if (ps == null) return;
+        var psr = ps.GetComponent<ParticleSystemRenderer>();
+        if (psr == null) return;
+        Material mat = GetMaterial(material);
+        if (trailMaterial) psr.trailMaterial = mat;
+        else psr.material = mat;
+    }
+
+    /// <summary>
+    /// Clones an existing game material.
+    /// </summary>
+    public static Material CloneMaterial(GameMaterial source, string? name = null)
+    {
+        Material baseMat = GetMaterial(source);
+        if (baseMat == null)
+        {
+            ApiLog.Log($"Warning: GameMaterials.CloneMaterial: Base material {source} not found (maybe materials not loaded yet?)");
+            return null!;
+        }
+        Material clone = new Material(baseMat);
+        if (name != null) clone.name = name;
+        return clone;
+    }
+
+    /// <summary>
+    /// Clones an existing game material and applies a texture to its variation property.
+    /// </summary>
+    public static Material CloneMaterial(GameMaterial source, Texture2D texture, string? name = null)
+    {
+        Material clone = CloneMaterial(source, name);
+        if (clone != null && texture != null)
+        {
+            if (clone.HasProperty("_Variation")) clone.SetTexture("_Variation", texture);
+            else if (clone.HasProperty("_MainTex")) clone.SetTexture("_MainTex", texture);
+            else clone.mainTexture = texture;
+        }
+        return clone!;
+    }
+
+    /// <summary>
+    /// Creates a fluent batch material applicator for a root GameObject.
+    /// </summary>
+    /// <param name="root">The root GameObject to configure.</param>
+    /// <returns>A <see cref="MaterialApplicator"/> for chaining material assignments.</returns>
+    public static MaterialApplicator Batch(GameObject root) => new MaterialApplicator(root);
 
     private static void ApplyToTarget(GameObject target, Material mat, bool deepApply)
     {
@@ -1198,5 +1414,143 @@ public static class GameMaterials
             mats[i] = mat;
         }
         r.materials = mats;
+    }
+}
+
+/// <summary>
+/// Fluent builder for applying multiple materials to a GameObject and its children.
+/// </summary>
+public class MaterialApplicator
+{
+    /// <summary>The root GameObject this applicator configures.</summary>
+    private readonly GameObject _root;
+
+    /// <summary>
+    /// Creates a batch material applicator for the given root object.
+    /// </summary>
+    /// <param name="root">The root GameObject to configure.</param>
+    public MaterialApplicator(GameObject root)
+    {
+        _root = root;
+    }
+
+    /// <summary>
+    /// Applies a material to the batch root (optionally recursive).
+    /// </summary>
+    public MaterialApplicator Root(GameMaterial material, bool deep = true)
+    {
+        GameMaterials.ApplyMaterial(_root, material, deep);
+        return this;
+    }
+
+    /// <summary>
+    /// Applies a descriptive material to the batch root (optionally recursive).
+    /// </summary>
+    public MaterialApplicator Root(DescriptiveMaterial material, bool deep = true)
+    {
+        GameMaterials.ApplyMaterial(_root, material, deep);
+        return this;
+    }
+
+    /// <summary>
+    /// Applies a material to a child object specified by path.
+    /// </summary>
+    public MaterialApplicator At(string childPath, GameMaterial material, bool deep = false)
+    {
+        GameMaterials.ApplyToChild(_root, childPath, material, deep);
+        return this;
+    }
+
+    /// <summary>
+    /// Applies a descriptive material to a child object specified by path.
+    /// </summary>
+    public MaterialApplicator At(string childPath, DescriptiveMaterial material, bool deep = false)
+    {
+        GameMaterials.ApplyToChild(_root, childPath, material, deep);
+        return this;
+    }
+
+    /// <summary>
+    /// Sets multiple materials on a child object's renderer.
+    /// </summary>
+    public MaterialApplicator Slots(string childPath, params GameMaterial[] materials)
+    {
+        var child = _root.transform.Find(childPath);
+        if (child != null)
+        {
+            var r = child.GetComponent<Renderer>();
+            if (r != null) GameMaterials.SetMaterials(r, materials);
+        }
+        return this;
+    }
+
+    /// <summary>
+    /// Sets multiple descriptive materials on a child object's renderer.
+    /// </summary>
+    public MaterialApplicator Slots(string childPath, params DescriptiveMaterial[] materials)
+    {
+        var child = _root.transform.Find(childPath);
+        if (child != null)
+        {
+            var r = child.GetComponent<Renderer>();
+            if (r != null) GameMaterials.SetMaterials(r, materials);
+        }
+        return this;
+    }
+
+    /// <summary>
+    /// Sets multiple materials on a specific renderer.
+    /// </summary>
+    public MaterialApplicator Slots(Renderer renderer, params GameMaterial[] materials)
+    {
+        GameMaterials.SetMaterials(renderer, materials);
+        return this;
+    }
+
+    /// <summary>
+    /// Sets multiple descriptive materials on a specific renderer.
+    /// </summary>
+    public MaterialApplicator Slots(Renderer renderer, params DescriptiveMaterial[] materials)
+    {
+        GameMaterials.SetMaterials(renderer, materials);
+        return this;
+    }
+
+    /// <summary>
+    /// Sets a material at a specific slot index on a child object's renderer.
+    /// </summary>
+    public MaterialApplicator AtSlot(string childPath, int slot, GameMaterial material)
+    {
+        var child = _root.transform.Find(childPath);
+        if (child != null) GameMaterials.SetMaterialAt(child.gameObject, slot, material);
+        return this;
+    }
+
+    /// <summary>
+    /// Sets a descriptive material at a specific slot index on a child object's renderer.
+    /// </summary>
+    public MaterialApplicator AtSlot(string childPath, int slot, DescriptiveMaterial material)
+    {
+        var child = _root.transform.Find(childPath);
+        if (child != null) GameMaterials.SetMaterialAt(child.gameObject, slot, material);
+        return this;
+    }
+
+    /// <summary>
+    /// Applies a material to a ParticleSystem's renderer.
+    /// </summary>
+    public MaterialApplicator AtParticle(ParticleSystem ps, GameMaterial material, bool trailMaterial = false)
+    {
+        GameMaterials.ApplyMaterial(ps, material, trailMaterial);
+        return this;
+    }
+
+    /// <summary>
+    /// Applies a descriptive material to a ParticleSystem's renderer.
+    /// </summary>
+    public MaterialApplicator AtParticle(ParticleSystem ps, DescriptiveMaterial material, bool trailMaterial = false)
+    {
+        GameMaterials.ApplyMaterial(ps, material, trailMaterial);
+        return this;
     }
 }

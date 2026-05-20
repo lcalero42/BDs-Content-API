@@ -3,12 +3,21 @@ using System.Linq;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Tables;
 
-namespace DbsContentApi.Modules;
+namespace DbsContentApi;
 
+/// <summary>
+/// Registry for custom localized comment strings that are injected into the game's comment UI at runtime.
+/// </summary>
 public static class CustomCommentRegistry
 {
     private static Dictionary<string, List<CustomComment>> _registeredComments = new();
 
+    /// <summary>
+    /// Registers one or more localized translations for a comment key.
+    /// If a translation for the same language already exists, its text is updated.
+    /// </summary>
+    /// <param name="key">The localization key used to look up the comment in string tables.</param>
+    /// <param name="translations">One or more <see cref="CustomComment"/> entries for different languages.</param>
     public static void Register(string key, params CustomComment[] translations)
     {
         if (!_registeredComments.TryGetValue(key, out var list))
@@ -34,7 +43,7 @@ public static class CustomCommentRegistry
     {
         if (tables == null)
         {
-            Logger.LogError("[CustomCommentRegistry] tables dictionary is null.");
+            ApiLog.LogError("[CustomCommentRegistry] tables dictionary is null.");
             return;
         }
 
@@ -52,7 +61,7 @@ public static class CustomCommentRegistry
 
                 if (stringTable.GetEntry(key) != null)
                 {
-                    Logger.LogError($"[CustomCommentRegistry] Key collision for '{key}' in table '{localeId.Code}'. Skipping.");
+                    ApiLog.LogError($"[CustomCommentRegistry] Key collision for '{key}' in table '{localeId.Code}'. Skipping.");
                     continue;
                 }
 
@@ -69,10 +78,10 @@ public static class CustomCommentRegistry
                     continue;
                 }
 
-                Logger.LogError($"[CustomCommentRegistry] No translation or English fallback for key '{key}' in locale '{localeId.Code}'.");
+                ApiLog.LogError($"[CustomCommentRegistry] No translation or English fallback for key '{key}' in locale '{localeId.Code}'.");
             }
         }
 
-        Logger.Log($"[CustomCommentRegistry] Applied {_registeredComments.Count} custom comment keys to {tables.Count} string tables.");
+        ApiLog.Log($"[CustomCommentRegistry] Applied {_registeredComments.Count} custom comment keys to {tables.Count} string tables.");
     }
 }

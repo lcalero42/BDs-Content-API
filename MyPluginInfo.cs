@@ -1,6 +1,6 @@
 namespace DbsContentApi;
 
-public class MyPluginInfo
+internal static class MyPluginInfo
 {
     public const string PLUGIN_GUID = "db.contentapi";
     public const string PLUGIN_NAME = "DB's Content API";

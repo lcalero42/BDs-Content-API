@@ -1,10 +1,8 @@
 using System.Collections.Generic;
-using DbsContentApi.Modules;
 using HarmonyLib;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
 using UnityEngine.Localization.Tables;
-using Logger = DbsContentApi.Modules.Logger;
 
 namespace DbsContentApi.Patches
 {
@@ -23,7 +21,7 @@ namespace DbsContentApi.Patches
 
             if (s_tables == null)
             {
-                Logger.LogError("[CommentUIPatch] s_tables is null in CommentUI.Awake postfix. Localization might not be loaded yet.");
+                ApiLog.LogError("[CommentUIPatch] s_tables is null in CommentUI.Awake postfix. Localization might not be loaded yet.");
                 return;
             }
 

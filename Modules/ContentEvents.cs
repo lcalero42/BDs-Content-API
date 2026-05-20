@@ -1,32 +1,45 @@
 using System;
 using HarmonyLib;
 
-using Logger = DbsContentApi.Modules.Logger;
+namespace DbsContentApi;
 
-namespace DbsContentApi.Modules;
-
+/// <summary>
+/// API for registering custom <see cref="ContentEvent"/> types that can be referenced by content triggers and filming systems.
+/// Custom events are assigned IDs starting at 2000 in registration order.
+/// </summary>
 public class ContentEvents
 {
+    /// <summary>
+    /// Registers a custom content event type with the API.
+    /// The event is instantiated on demand when the game requests it by ID.
+    /// </summary>
+    /// <param name="contentEvent">A template instance of the content event to register.</param>
     public static void RegisterEvent(ContentEvent contentEvent)
     {
-        Logger.Log($"Registering content event for {contentEvent.GetName()}");
-        DbsContentApi.DbsContentApiPlugin.customContentEvents.Add(contentEvent);
+        ApiLog.Log($"Registering content event for {contentEvent.GetName()}");
+        DbsContentApiPlugin.customContentEvents.Add(contentEvent);
     }
 
+    /// <summary>
+    /// Resolves the runtime event ID for a registered content event by its type name.
+    /// IDs are assigned as <c>2000 + registrationIndex</c>.
+    /// </summary>
+    /// <param name="contentEventName">The class name of the registered content event type.</param>
+    /// <returns>The assigned event ID, or <c>1999</c> if the event was not found.</returns>
     public static ushort GetEventID(string contentEventName)
     {
         var eventList = DbsContentApiPlugin.customContentEvents;
 
-        Logger.Log(eventList.Count.ToString());
+        ApiLog.Log(eventList.Count.ToString());
 
         int foundIndex = eventList.FindIndex(match => match.GetType().Name == contentEventName);
         if (foundIndex == -1)
         {
             for (int index = 0; index < eventList.Count; index++)
             {
-                Logger.Log($"{eventList[index].GetType().Name}, {contentEventName}, {eventList[index].GetType().Name == contentEventName}");
+                ApiLog.Log($"{eventList[index].GetType().Name}, {contentEventName}, {eventList[index].GetType().Name == contentEventName}");
             }
-            Logger.Log($"GetEventID for {contentEventName} returned -1");
+            ApiLog.Log($"GetEventID for {contentEventName} returned -1");
         }
 
         return (ushort)(2000 + foundIndex);
@@ -43,7 +56,7 @@ internal class ContentEventIDMapperPatches
     {
         var eventList = DbsContentApiPlugin.customContentEvents;
 
-        Logger.Log($"GetContentEvent was called: {id} Normalized: {id - 2000} EventList count: {eventList.Count}");
+        ApiLog.Log($"GetContentEvent was called: {id} Normalized: {id - 2000} EventList count: {eventList.Count}");
         if (id - 2000 < 0) return true;
         ContentEvent? contentEvent = eventList[id - 2000];
         if (contentEvent == null) return true;

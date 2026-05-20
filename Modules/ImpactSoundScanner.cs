@@ -2,10 +2,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zorro.Core;
 
-namespace DbsContentApi.Modules;
+namespace DbsContentApi;
 
 public enum ImpactSoundType
 {
+    /// <summary>No impact sound.</summary>
     None,
     /// <summary>
     /// Bouncy plastic object
@@ -36,7 +37,9 @@ public enum ImpactSoundType
     /// Neutral impact sound for soft objects
     /// </summary>
     BombBounce2,
+    /// <summary>CD/disc impact sound variant 1.</summary>
     CDBounce1,
+    /// <summary>CD/disc impact sound variant 2.</summary>
     CDBounce2,
     /// <summary>
     /// For large and heavy metal containers
@@ -46,6 +49,7 @@ public enum ImpactSoundType
     /// For large and heavy metal containers
     /// </summary>
     ContainerBounce2,
+    /// <summary>Mushroom-like soft impact sound.</summary>
     ShroomBounce1,
     /// <summary>
     /// Can bounce sound, for small and brittle metal containers
@@ -68,7 +72,7 @@ public enum ImpactSoundType
 /// <summary>
 /// Utility to scan items in the ItemDatabase for PhysicsSound components and extract impactSounds.
 /// </summary>
-public class ImpactSoundScanner
+internal static class ImpactSoundScanner
 {
     public static Dictionary<string, SFX_Instance> FoundImpactSounds = new Dictionary<string, SFX_Instance>();
 

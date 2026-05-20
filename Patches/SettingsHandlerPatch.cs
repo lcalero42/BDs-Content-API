@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using DbsContentApi.Modules;
+using System.Collections.Generic;
 using HarmonyLib;
 using Zorro.Settings;
 
@@ -12,12 +11,12 @@ namespace DbsContentApi.Patches
         [HarmonyPostfix]
         private static void ConstructorPostfix(SettingsHandler __instance)
         {
-            Logger.Log("[SettingsHandlerPatch] Constructor postfix triggered.");
-            Logger.Log($"[SettingsHandlerPatch] Registering {DbsContentApiPlugin._inputs.Count} custom inputs.");
+            ApiLog.Log("[SettingsHandlerPatch] Constructor postfix triggered.");
+            ApiLog.Log($"[SettingsHandlerPatch] Registering {DbsContentApiPlugin._inputs.Count} custom inputs.");
             foreach (BaseCWInput input in DbsContentApiPlugin._inputs)
             {
                 __instance.AddSetting(input);
-                Logger.Log($"[SettingsHandlerPatch] Registered input: {input.GetType().Name}");
+                ApiLog.Log($"[SettingsHandlerPatch] Registered input: {input.GetType().Name}");
             }
         }
     }

@@ -6,12 +6,114 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DbsContentApi.Modules;
+namespace DbsContentApi;
 
+/// <summary>
+/// Describes a custom shop category registered via <see cref="Items.RegisterCustomCategory"/>.
+/// </summary>
 public class CustomShopItemCategory
 {
+    /// <summary>Internal category index assigned by the API (starts at 20).</summary>
     public byte index;
+
+    /// <summary>Display name shown in the shop UI.</summary>
     public string name;
+}
+
+/// <summary>
+/// Configuration for a custom item passed to <see cref="Items.RegisterItem"/>.
+/// </summary>
+public class ItemConfig
+{
+    /// <summary>Display name shown in the shop and inventory.</summary>
+    public string displayName = "";
+
+    /// <summary>
+    /// Persistent identifier used for saves and networking.
+    /// When <c>null</c>, a deterministic ID is generated from <see cref="displayName"/>.
+    /// </summary>
+    public string? persistentId = null;
+
+    /// <summary>Shop price in in-game currency.</summary>
+    public int price = 100;
+
+    /// <summary>Shop category tab the item appears under.</summary>
+    public ShopItemCategory category = ShopItemCategory.Gadgets;
+
+    /// <summary>Whether the item can be purchased from the shop.</summary>
+    public bool purchasable = true;
+
+    /// <summary>Number of units sold per purchase.</summary>
+    public int quantity = 1;
+
+    /// <summary>Item type classification used by the game.</summary>
+    public Item.ItemType itemType = Item.ItemType.Tool;
+
+    /// <summary>Physics mass of the item prefab.</summary>
+    public float mass = 0.5f;
+
+    /// <summary>Multiplier applied to the item's ground collision size.</summary>
+    public float groundSizeMultiplier = 1f;
+
+    /// <summary>Multiplier applied to the item's ground collision mass.</summary>
+    public float groundMassMultiplier = 1f;
+
+    /// <summary>Whether the item can spawn in the world during rounds.</summary>
+    public bool spawnable = true;
+
+    /// <summary>Spawn rarity tier when the item appears as a world pickup.</summary>
+    public RARITY toolSpawnRarity = RARITY.common;
+
+    /// <summary>Budget cost when spawned as a tool pickup.</summary>
+    public int toolBudgetCost = 1;
+
+    /// <summary>General spawn budget cost.</summary>
+    public int budgetCost = 0;
+
+    /// <summary>Relative spawn rarity weight.</summary>
+    public float rarity = 1f;
+
+    /// <summary>Local position offset when the item is held in the player's hand.</summary>
+    public Vector3 holdPos = new Vector3(0.3f, -0.3f, 0.7f);
+
+    /// <summary>Local rotation offset when the item is held in the player's hand.</summary>
+    public Vector3 holdRot = Vector3.zero;
+
+    /// <summary>Whether to use <see cref="alternativeHoldPos"/> instead of <see cref="holdPos"/>.</summary>
+    public bool useAlternativeHoldPos = false;
+
+    /// <summary>Whether to use <see cref="alternativeHoldRot"/> instead of <see cref="holdRot"/>.</summary>
+    public bool useAlternativeHoldRot = false;
+
+    /// <summary>Alternative local hold position for special hold animations.</summary>
+    public Vector3 alternativeHoldPos = new Vector3(0.3f, -0.3f, 0.7f);
+
+    /// <summary>Alternative local hold rotation for special hold animations.</summary>
+    public Vector3 alternativeHoldRot = Vector3.zero;
+
+    /// <summary>
+    /// Shop/inventory icon sprite. Assign before calling <see cref="Items.RegisterItem"/>
+    /// (e.g. via <c>bundle.LoadAsset&lt;Sprite&gt;</c>).
+    /// </summary>
+    public Sprite? icon = null;
+
+    /// <summary>
+    /// Obsolete: load a <see cref="Sprite"/> and assign <see cref="icon"/> instead.
+    /// </summary>
+    [Obsolete("Assign config.icon yourself after loading from a bundle or other source. RegisterItem no longer loads icons from AssetBundles.")]
+    public string? iconName = null;
+
+    /// <summary>Custom impact sounds applied to the item's <see cref="PhysicsSound"/> component.</summary>
+    public SFX_Instance[]? impactSounds = null;
+
+    /// <summary>
+    /// Impact sound types resolved automatically via <see cref="ImpactSoundScanner"/>.
+    /// Used when <see cref="impactSounds"/> is not set.
+    /// </summary>
+    public ImpactSoundType[]? impactSoundTypes = null;
+
+    /// <summary>Key/tooltip entries shown in the item description UI.</summary>
+    public List<ItemKeyTooltip> tooltips = new();
 }
 
 /// <summary>
@@ -20,12 +122,28 @@ public class CustomShopItemCategory
 /// </summary>
 public static class Items
 {
+    /// <summary>All custom shop categories registered by mods via <see cref="RegisterCustomCategory"/>.</summary>
     public static List<CustomShopItemCategory> customCategories = new List<CustomShopItemCategory>();
-    public static byte RegisterCustomCategory(string categoryName)
+
+    /// <summary>
+    /// Registers a custom shop category and returns it as a ShopItemCategory.
+    /// </summary>
+    /// <param name="categoryName">The name of the category.</param>
+    /// <returns>The registered ShopItemCategory.</returns>
+    public static ShopItemCategory RegisterCustomCategory(string categoryName)
     {
         byte index = (byte)(customCategories.Count + 20);
         customCategories.Add(new CustomShopItemCategory() { index = index, name = categoryName });
-        return index;
+        return (ShopItemCategory)index;
+    }
+
+    /// <summary>
+    /// Defers the registration of items until the API is ready.
+    /// </summary>
+    /// <param name="callback">The callback to execute for registration.</param>
+    public static void DeferRegistration(Action callback)
+    {
+        DbsContentApiPlugin.customItemsRegistrationCallbacks.Add(callback);
     }
 
     /// <summary>
@@ -47,7 +165,7 @@ public static class Items
         if (prefab.GetComponent<ItemInstance>() == null)
         {
             prefab.AddComponent<ItemInstance>();
-            Debug.Log("Added ItemInstance component");
+            ApiLog.Log("Added ItemInstance component");
         }
         EnsureHandGizmo(prefab);
     }
@@ -70,44 +188,88 @@ public static class Items
         dummyChild.transform.localPosition = Vector3.zero;
         dummyChild.transform.localRotation = Quaternion.identity;
 
-        Debug.Log("Added HandGizmo with dummy child");
+        ApiLog.Log("Added HandGizmo with dummy child");
     }
 
     /// <summary>
-    /// Registers a prefab in the Photon network pool.
+    /// Registers an item with the game. This is the main entry point for item registration.
+    /// The prefab may come from an AssetBundle, be built in code, or be authored in the Unity editor.
     /// </summary>
-    /// <param name="prefab">The prefab to register.</param>
-    public static void RegisterPrefabInPool(GameObject prefab)
+    /// <param name="prefab">The item GameObject prefab (already configured).</param>
+    /// <param name="config">The configuration for the item.</param>
+    /// <returns>The registered Item.</returns>
+    public static Item RegisterItem(GameObject prefab, ItemConfig config)
     {
-        if (PhotonNetwork.PrefabPool is DefaultPool defaultPool)
-        {
-            if (!defaultPool.ResourceCache.ContainsKey(prefab.name))
-            {
-                defaultPool.ResourceCache.Add(prefab.name, prefab);
-            }
-        }
-    }
+        if (prefab == null)
+            throw new ArgumentNullException(nameof(prefab));
 
-    /// <summary>
-    /// Creates and configures a new Item ScriptableObject.
-    /// </summary>
-    /// <param name="bundle">The AssetBundle containing assets.</param>
-    /// <param name="prefab">The item GameObject prefab.</param>
-    /// <param name="price">The price of the item.</param>
-    /// <param name="category">The shop category.</param>
-    /// <param name="iconName">The name of the icon asset.</param>
-    /// <param name="impactSounds">The impact sounds for the item's PhysicsSound component.</param>
-    /// <param name="holdPos">The holding position of the item.</param>
-    /// <param name="displayName">The display name of the item.</param>
-    /// <returns>The configured Item.</returns>
-    public static Item CreateItem(AssetBundle bundle, GameObject prefab, int price, ShopItemCategory category,
-                                                        string iconName, SFX_Instance[] impactSounds, Vector3 holdPos, Vector3 holdRot, string displayName, bool useAlternativeHoldPos, bool useAlternativeHoldRot, Vector3 alternativeHoldingPos, Vector3 alternativeHoldingRot)
-    {
+        ApiLog.Log($"Registering item: {config.displayName} (Prefab: {prefab.name})");
+
+        SetupPrefab(prefab);
+        ContentLoader.RegisterPrefabInPhotonPool(prefab);
+
         Item item = ScriptableObject.CreateInstance<Item>();
 
-        SetupPhysicsSound(prefab, impactSounds);
-        SetupIcon(bundle, prefab, item, iconName);
-        SetupItemBasics(item, prefab, price, category, holdPos, holdRot, displayName, useAlternativeHoldPos, useAlternativeHoldRot, alternativeHoldingPos, alternativeHoldingRot);
+        // Setup sounds
+        SFX_Instance[]? impactSounds = config.impactSounds;
+        if (impactSounds == null && config.impactSoundTypes != null)
+        {
+            impactSounds = ImpactSoundScanner.GetImpactSounds(config.impactSoundTypes);
+        }
+        
+        if (impactSounds != null && impactSounds.Length > 0)
+        {
+            SetupPhysicsSound(prefab, impactSounds);
+        }
+
+        if (config.icon != null)
+        {
+            item.icon = config.icon;
+        }
+        else if (!string.IsNullOrEmpty(config.iconName))
+        {
+            ApiLog.LogWarning(
+                $"Item '{config.displayName}': config.iconName is obsolete. Load a Sprite and set config.icon before calling RegisterItem.");
+        }
+
+        // Setup basics
+        item.displayName = config.displayName;
+        item.itemObject = prefab;
+
+        string pId = config.persistentId ?? ("unlistedentities." + item.displayName.ToLower().Replace(" ", ""));
+        item.persistentID = pId;
+        item.PersistentID = GuidHelper.ToDeterministicGuid(pId);
+        item.name = pId;
+
+        item.itemType = config.itemType;
+        item.Category = config.category;
+
+        item.mass = config.mass;
+        item.holdPos = config.holdPos;
+        item.holdRotation = config.holdRot;
+        item.useAlternativeHoldingPos = config.useAlternativeHoldPos;
+        item.useAlternativeHoldingRot = config.useAlternativeHoldRot;
+        item.alternativeHoldPos = config.alternativeHoldPos;
+        item.alternativeHoldRot = config.alternativeHoldRot;
+        item.groundSizeMultiplier = config.groundSizeMultiplier;
+        item.groundMassMultiplier = config.groundMassMultiplier;
+
+        item.purchasable = config.purchasable;
+        item.price = config.price;
+        item.quantity = config.quantity;
+        item.spawnable = config.spawnable;
+        item.toolSpawnRarity = config.toolSpawnRarity;
+        item.toolBudgetCost = config.toolBudgetCost;
+        item.budgetCost = config.budgetCost;
+        item.rarity = config.rarity;
+
+        item.content = null;
+        item.Tooltips = config.tooltips ?? new List<ItemKeyTooltip>();
+
+        if (!CheckDuplicateItem(item))
+        {
+            AddItemToDatabase(item);
+        }
 
         return item;
     }
@@ -116,10 +278,9 @@ public static class Items
     /// Sets up the icon for an item.
     /// </summary>
     /// <param name="bundle">The AssetBundle containing the icon.</param>
-    /// <param name="prefab">The item prefab.</param>
     /// <param name="item">The item to configure.</param>
     /// <param name="iconName">The name of the icon asset.</param>
-    public static void SetupIcon(AssetBundle bundle, GameObject prefab, Item item, string iconName)
+    public static void SetupIcon(AssetBundle bundle, Item item, string iconName)
     {
         Sprite icon = bundle.LoadAsset<Sprite>(iconName);
         if (icon != null)
@@ -133,7 +294,11 @@ public static class Items
     /// <param name="impactSounds">The impact sounds to apply.</param>
     public static void SetupPhysicsSound(GameObject prefab, SFX_Instance[] impactSounds)
     {
-        var ps = prefab.AddComponent<PhysicsSound>();
+        var ps = prefab.GetComponent<PhysicsSound>();
+        if (ps == null)
+        {
+            ps = prefab.AddComponent<PhysicsSound>();
+        }
         ps.impactSounds = impactSounds;
     }
 
@@ -163,7 +328,7 @@ public static class Items
         SFX_Instance templateSFX = currentItems[0].itemObject.GetComponent<PhysicsSound>()?.impactSounds?[0];
         if (templateSFX == null)
         {
-            Debug.LogError("Could not find template SFX_Instance");
+            ApiLog.LogError("Could not find template SFX_Instance");
             return GetFallbackPhysicsSound(db);
         }
 
@@ -188,7 +353,7 @@ public static class Items
         SFX_Instance templateSFX = currentItems[0].itemObject.GetComponent<PhysicsSound>()?.impactSounds?[0];
         if (templateSFX == null)
         {
-            Debug.LogError("Could not find template SFX_Instance");
+            ApiLog.LogError("Could not find template SFX_Instance");
             return GetFallbackPhysicsSound(db);
         }
 
@@ -197,50 +362,6 @@ public static class Items
         sfxInstance.settings.pitch = 1.0f;
         sfxInstance.settings.volume = 1.0f;
         return new SFX_Instance[] { sfxInstance };
-    }
-
-    /// <summary>
-    /// Sets up basic item properties.
-    /// </summary>
-    /// <param name="item">The item to configure.</param>
-    /// <param name="prefab">The item GameObject.</param>
-    /// <param name="price">The price of the item.</param>
-    /// <param name="category">The shop category.</param>
-    /// <param name="holdPos">The holding position of the item.</param>
-    /// <param name="displayName">The display name of the item.</param>
-    public static void SetupItemBasics(Item item, GameObject prefab, int price, ShopItemCategory category, Vector3 holdPos, Vector3 holdRot, string displayName, bool useAlternativeHoldPos, bool useAlternativeHoldRot, Vector3 alternativeHoldingPos, Vector3 alternativeHoldingRot)
-    {
-        item.displayName = displayName;
-        item.itemObject = prefab;
-
-        item.persistentID = "unlistedentities." + item.displayName.ToLower();
-        item.PersistentID = GuidHelper.ToDeterministicGuid(item.persistentID);
-        item.name = "unlistedentities." + item.displayName.ToLower();
-
-        item.itemType = Item.ItemType.Tool;
-        item.Category = category;
-
-        item.mass = 0.5f;
-        item.holdPos = holdPos;
-        item.holdRotation = holdRot;
-        item.useAlternativeHoldingPos = useAlternativeHoldPos;
-        item.useAlternativeHoldingRot = useAlternativeHoldRot;
-        item.alternativeHoldPos = alternativeHoldingPos;
-        item.alternativeHoldRot = alternativeHoldingRot;
-        item.groundSizeMultiplier = 1f;
-        item.groundMassMultiplier = 1f;
-
-        item.purchasable = true;
-        item.price = price;
-        item.quantity = 1;
-        item.spawnable = true;
-        item.toolSpawnRarity = RARITY.common;
-        item.toolBudgetCost = 1;
-        item.budgetCost = 0;
-        item.rarity = 1f;
-
-        item.content = null;
-        item.Tooltips = new List<ItemKeyTooltip>();
     }
 
     /// <summary>
@@ -300,25 +421,6 @@ public static class Items
     }
 
     /// <summary>
-    /// Copies icon from a template item.
-    /// </summary>
-    /// <param name="currentItems">The list of existing items.</param>
-    /// <returns>Template item with icon or null.</returns>
-    public static Item CopyIconFromTemplate(List<Item> currentItems)
-    {
-        foreach (Item existingItem in currentItems)
-        {
-            if (existingItem.icon != null && existingItem.purchasable)
-            {
-                Debug.Log($"Found template item with icon: {existingItem.displayName}");
-                return existingItem;
-            }
-        }
-        Debug.LogError("No template item found with icon!");
-        return null;
-    }
-
-    /// <summary>
     /// Adds an item to the ItemDatabase.
     /// </summary>
     /// <param name="item">The item to add.</param>
@@ -328,13 +430,11 @@ public static class Items
         var objectsField = GetObjectsField(db);
         var currentItems = GetItemsFromField(objectsField, db);
 
-        Item templateItem = CopyIconFromTemplate(currentItems);
-
         item.id = currentItems.Count > 0 ? (byte)(currentItems.Max(i => i.id) + 1) : (byte)0;
         currentItems.Add(item);
 
         objectsField.SetValue(db, currentItems);
-        Debug.Log($"Item '{item.displayName}' registered with ID: {item.id}");
+        ApiLog.Log($"Item '{item.displayName}' registered with ID: {item.id}");
     }
 
     /// <summary>
@@ -390,52 +490,5 @@ public static class Items
         FieldInfo objectsField = GetObjectsField(db);
         List<Item> currentItems = GetItemsFromField(objectsField, db);
         return currentItems.FirstOrDefault(i => i != null && i.id == id);
-    }
-
-    /// <summary>
-    /// Registers an item with the game. This is the main entry point for item registration.
-    /// Handles loading, setup, registration, and database addition.
-    /// </summary>
-    /// <param name="bundle">The AssetBundle containing the item assets.</param>
-    /// <param name="prefab">The item GameObject prefab.</param>
-    /// <param name="displayName">The display name of the item.</param>
-    /// <param name="price">The price of the item.</param>
-    /// <param name="category">The shop category.</param>
-    /// <param name="iconName">The name of the icon asset.</param>
-    /// <param name="impactSounds">The impact sounds for the item's PhysicsSound component.</param>
-    /// <param name="holdPos">Optional holding position of the item (default: (0.3, -0.3, 0.7)).</param>
-	public static Item RegisterItem(
-        AssetBundle bundle,
-        GameObject prefab,
-        string displayName,
-        int price,
-        ShopItemCategory category,
-        string iconName,
-        SFX_Instance[] impactSounds,
-        Vector3? holdPos = null,
-        Vector3? holdRot = null,
-        Vector3? alternativeHoldingPos = null,
-        Vector3? alternativeHoldingRot = null,
-        bool useAlternativeHoldPos = false,
-        bool useAlternativeHoldRot = false
-        )
-    {
-        Debug.Log($"Registering item: {prefab.name}");
-
-        SetupPrefab(prefab);
-
-        RegisterPrefabInPool(prefab);
-
-        // Use default value if not provided
-        Vector3 actualHoldPos = holdPos ?? new Vector3(0.3f, -0.3f, 0.7f);
-        Vector3 actualHoldRot = holdRot ?? Vector3.zero;
-        Vector3 actualAlternativeHoldingPos = alternativeHoldingPos ?? new Vector3(0.3f, -0.3f, 0.7f);
-        Vector3 actualAlternativeHoldingRot = alternativeHoldingRot ?? Vector3.zero;
-        Item item = CreateItem(bundle, prefab, price, category, iconName, impactSounds, actualHoldPos, actualHoldRot, displayName, useAlternativeHoldPos, useAlternativeHoldRot, actualAlternativeHoldingPos, actualAlternativeHoldingRot);
-
-        if (!CheckDuplicateItem(item))
-            AddItemToDatabase(item);
-
-        return item;
     }
 }
