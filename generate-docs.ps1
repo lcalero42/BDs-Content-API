@@ -19,6 +19,6 @@ dotnet docfx build docfx.json
 Write-Host "Documentation generated in _site/"
 
 if ($Serve) {
-    Write-Host "Serving at http://localhost:8080 ..."
-    dotnet docfx serve _site
+    Write-Host "Serving at http://localhost:9000 ..."
+    dotnet docfx serve _site -p 9000
 }

@@ -52,8 +52,8 @@
     "overwrite": "apidoc/overwrites/**/*.md",
     "output": "_site",
     "template": [
-      "modern",
-      "templates/dbscontentapi"
+      "default",
+      "modern"
     ],
     "globalMetadata": {
       "_appName": "DbsContentApi",

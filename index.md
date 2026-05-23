@@ -22,5 +22,5 @@ Consumer mods reference the published `DbsContentApi.dll` from the Steam Worksho
 dotnet build -c Release
 dotnet docfx metadata docfx.json
 dotnet docfx build docfx.json
-dotnet docfx serve _site
+dotnet docfx serve _site -p 9000
 ```

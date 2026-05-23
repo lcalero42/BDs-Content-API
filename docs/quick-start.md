@@ -12,7 +12,7 @@ Get a custom shop item into Content Warning in about five minutes. This page cov
 
 Call your content registry from the plugin constructor:
 
-[!code-csharp[Plugin entry](../snippets/QuickStart.cs?name=PluginEntry)]
+[!code-csharp[Plugin entry](snippets/QuickStart.cs?name=PluginEntry)]
 
 > [!NOTE]
 > DbsContentApi applies registrations through internal Harmony patches. You do **not** need to wait for Unity `Awake`/`Start`.
@@ -27,7 +27,7 @@ MyMod/
   my_mod          ← AssetBundle file
 ```
 
-[!code-csharp[Load bundle](../snippets/QuickStart.cs?name=LoadBundle)]
+[!code-csharp[Load bundle](snippets/QuickStart.cs?name=LoadBundle)]
 
 > [!WARNING]
 > If `LoadAssetBundle` returns `null`, check the filename and folder layout before debugging item code.
@@ -36,7 +36,7 @@ MyMod/
 
 Shop items must use `Items.DeferRegistration` so the vanilla item database is ready first:
 
-[!code-csharp[Register item](../snippets/QuickStart.cs?name=RegisterItem)]
+[!code-csharp[Register item](snippets/QuickStart.cs?name=RegisterItem)]
 
 `RegisterItem` automatically adds `ItemInstance`, `HandGizmo`, and Photon pool registration.
 
@@ -44,7 +44,7 @@ Shop items must use `Items.DeferRegistration` so the vanilla item database is re
 
 Unity bundle shaders often render pink in-game. Apply a game material before registering:
 
-[!code-csharp[Apply material](../snippets/QuickStart.cs?name=ApplyMaterial)]
+[!code-csharp[Apply material](snippets/QuickStart.cs?name=ApplyMaterial)]
 
 ## 5. Build and test
 

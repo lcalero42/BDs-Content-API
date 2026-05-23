@@ -70,13 +70,13 @@ flowchart LR
 <div class="cw-card">
 <h3>🧩 Tutorials</h3>
 <p>Focused recipes: shop items, monsters, maps, materials, content events.</p>
-<a class="cw-card-link" href="tutorials/">Browse tutorials →</a>
+<a class="cw-card-link" href="tutorials/add-shop-item.md">Browse tutorials →</a>
 </div>
 
 <div class="cw-card">
 <h3>💡 Concepts</h3>
 <p>Lifecycle, multiplayer rules, bundle layout, and how the SDK hooks into the game.</p>
-<a class="cw-card-link" href="concepts/">Learn concepts →</a>
+<a class="cw-card-link" href="concepts/overview.md">Learn concepts →</a>
 </div>
 
 <div class="cw-card">
