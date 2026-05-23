@@ -1,4 +1,5 @@
-- name: Docs
+- name: Documentation
   href: docs/
-- name: API
+- name: API reference
   href: api/
+  topicHref: docs/api-overview.md

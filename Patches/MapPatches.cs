@@ -2,9 +2,9 @@ using HarmonyLib;
 using UnityEngine;
 
 namespace DbsContentApi.Patches;
+
 /// <summary>
 /// Harmony patches to enable custom map loading and selection.
-/// Ported from CustomMapTest.
 /// </summary>
 [HarmonyPatch(typeof(Level))]
 internal static class SpawnMapPatch
@@ -13,28 +13,30 @@ internal static class SpawnMapPatch
     [HarmonyPrefix]
     public static bool Prefix()
     {
-        // Custom level indices start at 3
         if (SurfaceNetworkHandler.RoomStats.LevelToPlay < 3)
         {
+            DbsContentApiPlugin.selectedCustomMapId = null;
             ApiLog.Log($"[Maps] Level.SetupFinished: LevelToPlay is {SurfaceNetworkHandler.RoomStats.LevelToPlay}, skipping custom map loading.");
             return true;
         }
 
         if (!Level.currentLevel.levelIsReady)
         {
+            CustomMap? map = Maps.ResolveMapForCurrentRound();
             ApiLog.Log($"[Maps] Level.SetupFinished: LevelToPlay is {SurfaceNetworkHandler.RoomStats.LevelToPlay}, adding CustomMapLoader.");
             var loader = PhotonGameLobbyHandler.Instance.gameObject.AddComponent<CustomMapLoader>();
-            int customMapIndex = SurfaceNetworkHandler.RoomStats.LevelToPlay - 3;
 
-            if (customMapIndex >= 0 && customMapIndex < DbsContentApiPlugin.customMaps.Count)
+            if (map != null)
             {
-                loader.Map = DbsContentApiPlugin.customMaps[customMapIndex];
-                ApiLog.Log($"[Maps] Assigned map: {loader.Map.DisplayName}");
+                loader.Map = map;
+                ApiLog.Log($"[Maps] Assigned map: {map.DisplayName} (Id: {map.MapId})");
             }
             else
             {
-                ApiLog.LogError($"[Maps] Custom map index {customMapIndex} out of range! Total custom maps: {DbsContentApiPlugin.customMaps.Count}");
+                ApiLog.LogError($"[Maps] Could not resolve custom map for LevelToPlay {SurfaceNetworkHandler.RoomStats.LevelToPlay} (selected id: {DbsContentApiPlugin.selectedCustomMapId ?? "none"})");
             }
+
+            DbsContentApiPlugin.selectedCustomMapId = null;
         }
 
         return Level.currentLevel.levelIsReady;
@@ -54,35 +56,27 @@ internal static class ChooseMapPatch
             return true;
         }
 
-        ApiLog.Log($"[Maps] Choosing new map. Custom maps registered: {DbsContentApiPlugin.customMaps.Count}. Modded only: {DbsContentApiPlugin.moddedMapsOnly}");
+        ApiLog.Log($"[Maps] Choosing new map. Registered: {DbsContentApiPlugin.customMaps.Count}. Modded only: {DbsContentApiPlugin.moddedMapsOnly}");
 
-        // total = vanilla (3) + custom
-        int totalMaps = 3 + DbsContentApiPlugin.customMaps.Count;
-
-        // Randomly pick between vanilla (0-2) and custom (3+)
-        int minIndex = DbsContentApiPlugin.moddedMapsOnly ? 3 : 0;
-        int nextLevel = Random.Range(minIndex, totalMaps);
-
-        // Try to avoid picking the same level twice in a row
-        int attempts = 0;
-        while (attempts < 100 && nextLevel == __instance.LevelToPlay)
+        CustomMap? picked = Maps.PickMapForNextRound(__instance);
+        if (picked == null)
         {
-            nextLevel = Random.Range(minIndex, totalMaps);
-            attempts++;
-        }
-
-        __instance.LevelToPlay = nextLevel;
-
-        if (nextLevel < 3)
-        {
+            int nextLevel = UnityEngine.Random.Range(0, 3);
+            int attempts = 0;
+            while (attempts < 100 && nextLevel == __instance.LevelToPlay)
+            {
+                nextLevel = UnityEngine.Random.Range(0, 3);
+                attempts++;
+            }
+            __instance.LevelToPlay = nextLevel;
+            DbsContentApiPlugin.selectedCustomMapId = null;
             ApiLog.Log($"[Maps] Selected vanilla map: {nextLevel}");
-        }
-        else
-        {
-            var map = DbsContentApiPlugin.customMaps[nextLevel - 3];
-            ApiLog.Log($"[Maps] Selected custom map: {map.DisplayName} (Index: {nextLevel})");
+            return false;
         }
 
+        DbsContentApiPlugin.selectedCustomMapId = picked.MapId;
+        __instance.LevelToPlay = Maps.GetLevelIndexForMap(picked);
+        ApiLog.Log($"[Maps] Selected custom map: {picked.DisplayName} (Id: {picked.MapId}, LevelToPlay: {__instance.LevelToPlay})");
         return false;
     }
 }

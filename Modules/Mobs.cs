@@ -466,7 +466,16 @@ public static class Mobs
     /// <returns>The <c>Bot_{name}</c> child GameObject.</returns>
     public static GameObject GetBotChildObject(GameObject customMonsterPrefab)
     {
-        var botObject = customMonsterPrefab.transform.Find($"Bot_{customMonsterPrefab.name}").gameObject;
+        string botChildName = $"Bot_{customMonsterPrefab.name}";
+        Transform? botTransform = customMonsterPrefab.transform.Find(botChildName);
+        if (botTransform == null)
+        {
+            throw new InvalidOperationException(
+                $"Bot child '{botChildName}' not found on monster prefab '{customMonsterPrefab.name}'. " +
+                "Ensure MobSetupConfig.bot is set so Mobs.RegisterMonster creates the bot child.");
+        }
+
+        GameObject botObject = botTransform.gameObject;
         ApiLog.Log($"  Retrieved Bot child object '{botObject.name}' for {customMonsterPrefab.name}");
         return botObject;
     }

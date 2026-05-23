@@ -1,0 +1,92 @@
+### YamlMime:TableOfContent
+items:
+- name: Overview
+  href: ../docs/api-overview.md
+- name: Plugin
+  items:
+  - name: DbsContentApiPlugin
+    href: DbsContentApi.DbsContentApiPlugin.yml
+  - name: BaseCWInput
+    href: DbsContentApi.BaseCWInput.yml
+- name: Content loading
+  items:
+  - name: ContentLoader
+    href: DbsContentApi.ContentLoader.yml
+- name: Items & shop
+  items:
+  - name: Items
+    href: DbsContentApi.Items.yml
+  - name: ItemConfig
+    href: DbsContentApi.ItemConfig.yml
+  - name: CustomShopItemCategory
+    href: DbsContentApi.CustomShopItemCategory.yml
+  - name: ImpactSoundType
+    href: DbsContentApi.ImpactSoundType.yml
+- name: Monsters
+  items:
+  - name: Mobs
+    href: DbsContentApi.Mobs.yml
+  - name: MobSetupConfig
+    href: DbsContentApi.MobSetupConfig.yml
+  - name: BudgetConfig
+    href: DbsContentApi.BudgetConfig.yml
+  - name: ControllerConfig
+    href: DbsContentApi.ControllerConfig.yml
+  - name: PlayerConfig
+    href: DbsContentApi.PlayerConfig.yml
+  - name: RagdollConfig
+    href: DbsContentApi.RagdollConfig.yml
+  - name: PhotonViewConfig
+    href: DbsContentApi.PhotonViewConfig.yml
+  - name: BotConfig
+    href: DbsContentApi.BotConfig.yml
+  - name: NavMeshAgentConfig
+    href: DbsContentApi.NavMeshAgentConfig.yml
+  - name: MonsterAnimationValuesConfig
+    href: DbsContentApi.MonsterAnimationValuesConfig.yml
+  - name: RigCreatorConfig
+    href: DbsContentApi.RigCreatorConfig.yml
+  - name: BotChaserConfig
+    href: DbsContentApi.BotChaserConfig.yml
+  - name: BotDragConfig
+    href: DbsContentApi.BotDragConfig.yml
+  - name: BotKnifoConfig
+    href: DbsContentApi.BotKnifoConfig.yml
+  - name: BotToolkitBoyConfig
+    href: DbsContentApi.BotToolkitBoyConfig.yml
+- name: Maps
+  items:
+  - name: Maps
+    href: DbsContentApi.Maps.yml
+  - name: MapConfig
+    href: DbsContentApi.MapConfig.yml
+  - name: MapPipelineFlags
+    href: DbsContentApi.MapPipelineFlags.yml
+  - name: MapLifecycleHooks
+    href: DbsContentApi.MapLifecycleHooks.yml
+  - name: CustomMap
+    href: DbsContentApi.CustomMap.yml
+  - name: CustomMapLoader
+    href: DbsContentApi.CustomMapLoader.yml
+  - name: MapLoadContext
+    href: DbsContentApi.MapLoadContext.yml
+- name: Materials
+  items:
+  - name: GameMaterials
+    href: DbsContentApi.GameMaterials.yml
+  - name: GameMaterial
+    href: DbsContentApi.GameMaterial.yml
+  - name: DescriptiveMaterial
+    href: DbsContentApi.DescriptiveMaterial.yml
+  - name: MaterialApplicator
+    href: DbsContentApi.MaterialApplicator.yml
+- name: Filming & comments
+  items:
+  - name: ContentEvents
+    href: DbsContentApi.ContentEvents.yml
+  - name: CustomCommentRegistry
+    href: DbsContentApi.CustomCommentRegistry.yml
+  - name: CustomComment
+    href: DbsContentApi.CustomComment.yml
+  - name: ObjectHelper
+    href: DbsContentApi.ObjectHelper.yml

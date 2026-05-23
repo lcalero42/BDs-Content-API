@@ -1,4 +1,14 @@
-- name: Introduction
+- name: Home
+  href: index.md
+- name: Quick start
+  href: quick-start.md
+- name: Installation
   href: introduction.md
-- name: Getting started
+- name: Complete guide
   href: getting-started.md
+- name: Concepts
+  href: concepts/
+- name: Tutorials
+  href: tutorials/
+- name: API overview
+  href: api-overview.md

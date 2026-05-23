@@ -30,7 +30,8 @@ public class ItemConfig
 
     /// <summary>
     /// Persistent identifier used for saves and networking.
-    /// When <c>null</c>, a deterministic ID is generated from <see cref="displayName"/>.
+    /// When <c>null</c>, defaults to <c>unknown_mod.{displayName}</c> (lowercase, spaces removed).
+    /// Set an explicit mod-scoped ID for production mods.
     /// </summary>
     public string? persistentId = null;
 
@@ -138,9 +139,19 @@ public static class Items
     }
 
     /// <summary>
-    /// Defers the registration of items until the API is ready.
+    /// Defers the registration of items until the shop and item database are ready.
+    /// Always call <see cref="RegisterItem"/> from inside this callback.
     /// </summary>
     /// <param name="callback">The callback to execute for registration.</param>
+    /// <example>
+    /// <code>
+    /// Items.DeferRegistration(() =>
+    /// {
+    ///     GameObject prefab = ContentLoader.LoadPrefabFromBundle(bundle, "MyItem.prefab");
+    ///     Items.RegisterItem(prefab, new ItemConfig { displayName = "My Item", price = 50 });
+    /// });
+    /// </code>
+    /// </example>
     public static void DeferRegistration(Action callback)
     {
         DbsContentApiPlugin.customItemsRegistrationCallbacks.Add(callback);
@@ -236,7 +247,7 @@ public static class Items
         item.displayName = config.displayName;
         item.itemObject = prefab;
 
-        string pId = config.persistentId ?? ("unlistedentities." + item.displayName.ToLower().Replace(" ", ""));
+        string pId = config.persistentId ?? ("unknown_mod." + item.displayName.ToLower().Replace(" ", ""));
         item.persistentID = pId;
         item.PersistentID = GuidHelper.ToDeterministicGuid(pId);
         item.name = pId;

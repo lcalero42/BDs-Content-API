@@ -4,7 +4,7 @@
     <AssemblyName>DbsContentApi</AssemblyName>
     <Product>DbsContentApi</Product>
     <!-- Change to whatever version you're currently on. -->
-    <Version>0.0.0</Version>
+    <Version>2.0.0</Version>
     <CWDir Condition=" '$(CWDir)' == '' ">C:\Program Files (x86)\Steam\steamapps\common\Content Warning</CWDir>
   </PropertyGroup>
 
@@ -56,6 +56,11 @@
   <ItemGroup>
     <Compile Remove="decomp\**" />
     <None Remove="decomp\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="docs\snippets\**" />
+    <None Include="docs\snippets\**" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
@@ -138,5 +143,11 @@
     <Reference Include="Zorro.UI.Runtime">
       <HintPath>$(CWDir)\Content Warning_Data\Managed\Zorro.UI.Runtime.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+      <Reference Update="*">
+          <Private>false</Private>
+      </Reference>
   </ItemGroup>
 </Project>

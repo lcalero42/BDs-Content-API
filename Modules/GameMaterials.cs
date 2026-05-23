@@ -1130,7 +1130,8 @@ public static class GameMaterials
     public static event Action? OnMaterialsLoaded;
 
     /// <summary>
-    /// Defers material application until game materials have been loaded.
+    /// Defers material application until <see cref="InitMaterials"/> has cached game materials.
+    /// Used by monster registration at plugin load; materials are applied when the shop opens.
     /// </summary>
     /// <param name="target">The GameObject to apply the material to.</param>
     /// <param name="material">The game material to apply.</param>
@@ -1141,7 +1142,9 @@ public static class GameMaterials
     }
 
     /// <summary>
-    /// Loads all materials from the game resources.
+    /// Scans loaded game resources and caches materials for <see cref="GameMaterial"/> lookup.
+    /// Called once when the shop screen initializes — intentionally not at plugin load, because
+    /// many in-game materials are not available in <see cref="Resources"/> until then.
     /// </summary>
     public static void InitMaterials()
     {

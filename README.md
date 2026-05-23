@@ -4,7 +4,17 @@ Shared modding API for [Content Warning](https://store.steampowered.com/app/2881
 
 ## Documentation
 
-API reference and guides are generated with [DocFX](https://dotnet.github.io/docfx/).
+Site structure:
+
+| Section | Contents |
+|---------|----------|
+| **Home** | At-a-glance overview and navigation cards |
+| **Quick start** | 5-minute Hello World shop item |
+| **Concepts** | Lifecycle, bundles, multiplayer rules |
+| **Tutorials** | Items, monsters, maps, materials, filming |
+| **API reference** | Grouped type index + generated member docs |
+
+Generated with [DocFX](https://dotnet.github.io/docfx/) using the **modern** template and a Content Warning–themed custom stylesheet.
 
 ```powershell
 # One-shot build + generate (from this directory)

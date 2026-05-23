@@ -32,7 +32,13 @@
           "decomp/**",
           "build-metadata/**",
           "steam-build/**",
-          "filterConfig.yml"
+          "filterConfig.yml",
+          "apidoc/**"
+        ]
+      },
+      {
+        "files": [
+          "toc.yml"
         ]
       }
     ],
@@ -43,16 +49,32 @@
         ]
       }
     ],
+    "overwrite": "apidoc/overwrites/**/*.md",
     "output": "_site",
     "template": [
-      "default",
-      "modern"
+      "modern",
+      "templates/dbscontentapi"
     ],
     "globalMetadata": {
       "_appName": "DbsContentApi",
-      "_appTitle": "DbsContentApi Documentation",
+      "_appTitle": "DbsContentApi — Content Warning Mod SDK",
+      "_appFooter": "DbsContentApi · Content Warning modding SDK",
       "_enableSearch": true,
+      "_enableNewTab": true,
+      "_disableContribution": false,
+      "_gitContribute": {
+        "repo": "https://github.com/lcalero42/BDs-Content-API",
+        "branch": "main"
+      },
       "pdf": false
+    },
+    "fileMetadata": {
+      "priority": {
+        "docs/index.md": 100,
+        "docs/quick-start.md": 90,
+        "docs/introduction.md": 80,
+        "docs/getting-started.md": 70
+      }
     }
   }
 }

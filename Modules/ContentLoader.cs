@@ -15,8 +15,15 @@ public static class ContentLoader
     /// Loads an AssetBundle from the plugin's directory.
     /// </summary>
     /// <param name="assembly">The assembly whose directory to search.</param>
-    /// <param name="bundleName">The filename of the bundle to load.</param>
-    /// <returns>The loaded AssetBundle.</returns>
+    /// <param name="bundleName">The filename of the bundle to load (no extension).</param>
+    /// <returns>The loaded AssetBundle, or <c>null</c> if the file is missing.</returns>
+    /// <example>
+    /// <code>
+    /// AssetBundle? bundle = ContentLoader.LoadAssetBundle(
+    ///     Assembly.GetExecutingAssembly(), "my_mod");
+    /// if (bundle == null) return;
+    /// </code>
+    /// </example>
     public static AssetBundle? LoadAssetBundle(Assembly assembly, string bundleName)
     {
         return LoadAssetBundle(assembly.Location, bundleName);

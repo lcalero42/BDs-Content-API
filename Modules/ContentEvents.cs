@@ -25,21 +25,18 @@ public class ContentEvents
     /// IDs are assigned as <c>2000 + registrationIndex</c>.
     /// </summary>
     /// <param name="contentEventName">The class name of the registered content event type.</param>
-    /// <returns>The assigned event ID, or <c>1999</c> if the event was not found.</returns>
+    /// <returns>The assigned event ID.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no registered event matches <paramref name="contentEventName"/>.</exception>
     public static ushort GetEventID(string contentEventName)
     {
         var eventList = DbsContentApiPlugin.customContentEvents;
 
-        ApiLog.Log(eventList.Count.ToString());
-
         int foundIndex = eventList.FindIndex(match => match.GetType().Name == contentEventName);
         if (foundIndex == -1)
         {
-            for (int index = 0; index < eventList.Count; index++)
-            {
-                ApiLog.Log($"{eventList[index].GetType().Name}, {contentEventName}, {eventList[index].GetType().Name == contentEventName}");
-            }
-            ApiLog.Log($"GetEventID for {contentEventName} returned -1");
+            throw new InvalidOperationException(
+                $"Content event '{contentEventName}' is not registered. " +
+                "Call ContentEvents.RegisterEvent before resolving its ID.");
         }
 
         return (ushort)(2000 + foundIndex);

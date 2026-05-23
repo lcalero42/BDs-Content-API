@@ -20,6 +20,7 @@ internal static class RoundSpawnerPatch
     public static void StartPrefix(RoundSpawner __instance)
     {
 
+
         ApiLog.Log("RoundSpawnerPatch: Registering custom monsters in Photon pool.");
         ApiLog.Log("RoundSpawnerPatch: Modded mobs only: " + DbsContentApiPlugin.moddedMobsOnly);
         ApiLog.Log("RoundSpawnerPatch: Custom monsters: " + DbsContentApiPlugin.customMonsters.Count);
@@ -38,15 +39,20 @@ internal static class RoundSpawnerPatch
         var traverse = Traverse.Create(__instance);
         var possibleSpawnsField = traverse.Field<GameObject[]>("possibleSpawns");
 
+        ApiLog.Log("RoundSpawnerPatch: possibleSpawnsField: " + possibleSpawnsField.Value.Length);
+
+
         if (DbsContentApiPlugin.moddedMobsOnly)
         {
-            // lets repeat the array 2 times since the updated game code now removes 1 monster from the array
-            var customMonsters = DbsContentApiPlugin.customMonsters;
-            for (int i = 0; i < 2; i++)
+            // Repeat registered monsters 4x in a local list — updated game code removes one entry from the pool.
+            GameObject[] registered = DbsContentApiPlugin.customMonsters.ToArray();
+            var spawnPool = new List<GameObject>(registered.Length * 4);
+            for (int i = 0; i < 4; i++)
             {
-                customMonsters.AddRange(customMonsters);
+                spawnPool.AddRange(registered);
             }
-            possibleSpawnsField.Value = DbsContentApiPlugin.customMonsters.ToArray();
+
+            possibleSpawnsField.Value = spawnPool.ToArray();
             ApiLog.Log("RoundSpawnerPatch: Modded mobs only: " + possibleSpawnsField.Value.Length);
         }
         else

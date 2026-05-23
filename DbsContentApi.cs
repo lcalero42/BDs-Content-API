@@ -72,6 +72,9 @@ public class DbsContentApiPlugin
 
     internal static List<GameObject> customMonsters = new();
     internal static List<CustomMap> customMaps = new();
+    internal static Dictionary<string, CustomMap> customMapsById = new(StringComparer.OrdinalIgnoreCase);
+    internal static string? selectedCustomMapId;
+    internal static string? forcedNextMapId;
     internal static List<Action> customItemsRegistrationCallbacks = new();
     internal static List<ContentEvent> customContentEvents = new();
 
@@ -81,10 +84,40 @@ public class DbsContentApiPlugin
 
     internal static List<BaseCWInput> _inputs = new();
 
-    internal static void RegisterCustomMap(CustomMap map)
+    internal static bool RegisterCustomMap(CustomMap map)
     {
+        if (customMapsById.ContainsKey(map.MapId))
+        {
+            ApiLog.LogError($"[Maps] Duplicate map id '{map.MapId}'. Registration rejected.");
+            return false;
+        }
+
         customMaps.Add(map);
-        ApiLog.Log($"[Maps] Registered custom map: {map.DisplayName}");
+        customMapsById[map.MapId] = map;
+        ApiLog.Log($"[Maps] Registered custom map: {map.DisplayName} (Id: {map.MapId}, Index: {customMaps.Count - 1})");
+        return true;
+    }
+
+    internal static bool TryGetCustomMap(string mapId, out CustomMap? map)
+    {
+        if (customMapsById.TryGetValue(mapId, out CustomMap? found))
+        {
+            map = found;
+            return true;
+        }
+        map = null;
+        return false;
+    }
+
+    internal static bool TryGetCustomMapByIndex(int index, out CustomMap? map)
+    {
+        if (index >= 0 && index < customMaps.Count)
+        {
+            map = customMaps[index];
+            return true;
+        }
+        map = null;
+        return false;
     }
 
     private void PatchAll()
