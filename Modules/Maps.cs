@@ -22,7 +22,6 @@ public class MapPipelineFlags
 {
     public bool skipVanillaCleanup;
     public bool skipRetexture;
-    public bool skipLightSpheres;
     public bool skipPatrolSetup;
     public bool skipMonsterRemoval;
     public bool skipMultipliers;
@@ -49,15 +48,6 @@ public class MapConfig
 
     /// <summary>Color tint applied during scene retexturing.</summary>
     public Color retextureColor = Color.gray;
-
-    /// <summary>Whether to configure LightSphere renderers with a custom shader and color.</summary>
-    public bool setupLightSpheres = true;
-
-    /// <summary>Color applied to LightSphere materials.</summary>
-    public Color lightSphereColor = Color.white;
-
-    /// <summary>Shader name used for LightSphere materials (e.g. <c>NiceShader</c>).</summary>
-    public string lightSphereShader = "NiceShader";
 
     /// <summary>Whether to replace the default ambience audio with the map's custom ambience clip.</summary>
     public bool setupAmbience = true;
@@ -406,9 +396,6 @@ public class CustomMapLoader : MonoBehaviour
 
         Map.Hooks.onAfterSceneLoaded?.Invoke(ctx);
 
-        if (!pipeline.skipLightSpheres && config.setupLightSpheres)
-            SetupLightSpheres(config);
-
         if (!pipeline.skipRetexture && config.retextureScene)
             RetextureScene(config, bellMaterial);
 
@@ -491,54 +478,56 @@ public class CustomMapLoader : MonoBehaviour
         }
     }
 
-    private void SetupLightSpheres(MapConfig config)
-    {
-        ApiLog.Log("[Maps] Phase: light spheres");
-        int count = 0;
-        foreach (Renderer rend in FindObjectsOfType<Renderer>())
-        {
-            if (!rend.name.Contains("LightSphere"))
-                continue;
-            Material[] mats = rend.sharedMaterials;
-            for (int i = 0; i < mats.Length; i++)
-            {
-                Shader? niceShader = Shader.Find(config.lightSphereShader);
-                if (niceShader == null)
-                    ApiLog.LogError($"[Maps] '{config.lightSphereShader}' not found!");
-                else
-                    mats[i].shader = niceShader;
-                mats[i].SetColor("_Color", config.lightSphereColor);
-            }
-            rend.sharedMaterials = mats;
-            Light? l = rend.gameObject.GetComponent<Light>();
-            if (l != null)
-                Level.currentLevel.lights.Add(l);
-            count++;
-        }
-        ApiLog.Log($"[Maps] LightSpheres handled: {count}");
-    }
-
-    private void RetextureScene(MapConfig config, Material render)
+    private void RetextureScene(MapConfig config, Material fallbackMaterial)
     {
         ApiLog.Log("[Maps] Phase: retexture");
-        int count = 0;
+
+        // Step 1: build a name → material lookup from all currently loaded game materials.
+        var materialMap = new Dictionary<string, Material>(StringComparer.OrdinalIgnoreCase);
+        foreach (Material mat in Resources.FindObjectsOfTypeAll<Material>())
+        {
+            if (mat == null || string.IsNullOrEmpty(mat.name))
+                continue;
+            // Strip the " (Instance)" suffix Unity appends to instanced materials.
+            string key = mat.name.EndsWith(" (Instance)", StringComparison.Ordinal)
+                ? mat.name.Substring(0, mat.name.Length - " (Instance)".Length)
+                : mat.name;
+            materialMap.TryAdd(key, mat);
+        }
+        ApiLog.Log($"[Maps] Retexture: {materialMap.Count} game materials indexed.");
+
+        // Steps 2 & 3: walk every renderer and replace each material slot by name.
+        int replaced = 0;
+        int fallbacks = 0;
         foreach (Renderer rend in FindObjectsOfType<Renderer>())
         {
-            if (rend.name.Contains("LightSphere"))
-                continue;
             if (rend.transform.root.name == "Spawns" || rend.transform.root.name.Contains("(Clone)"))
                 continue;
+
             Material[] mats = rend.sharedMaterials;
             for (int i = 0; i < mats.Length; i++)
             {
-                mats[i] = render;
-                mats[i].SetColor("_Color", config.retextureColor);
+                string rawName = mats[i] != null ? mats[i].name : string.Empty;
+                string lookupName = rawName.EndsWith(" (Instance)", StringComparison.Ordinal)
+                    ? rawName.Substring(0, rawName.Length - " (Instance)".Length)
+                    : rawName;
+
+                if (!string.IsNullOrEmpty(lookupName) && materialMap.TryGetValue(lookupName, out Material? found))
+                {
+                    mats[i] = found;
+                    replaced++;
+                }
+                else
+                {
+                    ApiLog.LogError($"[Maps] Material '{rawName}' on '{rend.name}' not found in game materials; reverting to M_World fallback.");
+                    mats[i] = fallbackMaterial;
+                    fallbacks++;
+                }
             }
             rend.sharedMaterials = mats;
             rend.gameObject.layer = 10;
-            count++;
         }
-        ApiLog.Log($"[Maps] Objects retextured: {count}");
+        ApiLog.Log($"[Maps] Retexture complete: {replaced} replaced, {fallbacks} fallback(s).");
     }
 
     private void CollectMarkers(MapConfig config, MapLoadContext ctx)
