@@ -17,7 +17,7 @@ public class CustomShopItemCategory
     public byte index;
 
     /// <summary>Display name shown in the shop UI.</summary>
-    public string name;
+    public string name = "Category Name";
 }
 
 /// <summary>
@@ -51,7 +51,7 @@ public class ItemConfig
     public Item.ItemType itemType = Item.ItemType.Tool;
 
     /// <summary>Physics mass of the item prefab.</summary>
-    public float mass = 0.5f;
+    public float mass = 3f;
 
     /// <summary>Multiplier applied to the item's ground collision size.</summary>
     public float groundSizeMultiplier = 1f;
@@ -227,7 +227,7 @@ public static class Items
         {
             impactSounds = ImpactSoundScanner.GetImpactSounds(config.impactSoundTypes);
         }
-        
+
         if (impactSounds != null && impactSounds.Length > 0)
         {
             SetupPhysicsSound(prefab, impactSounds);
