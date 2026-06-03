@@ -134,6 +134,7 @@ public class DbsContentApiPlugin
 
         try
         {
+            ApiLog.LogError("Patching...");
             Harmony.PatchAll();
             _isPatched = true;
             ApiLog.Log("Patched!");
