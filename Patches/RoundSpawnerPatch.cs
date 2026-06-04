@@ -2,7 +2,6 @@ using HarmonyLib;
 using UnityEngine;
 using System.Linq;
 using Photon.Pun;
-using System.Collections.Generic;
 using DefaultNamespace;
 namespace DbsContentApi.Patches;
 
@@ -44,20 +43,13 @@ internal static class RoundSpawnerPatch
 
         if (DbsContentApiPlugin.moddedMobsOnly)
         {
-            // Repeat registered monsters 4x in a local list — updated game code removes one entry from the pool.
-            GameObject[] registered = DbsContentApiPlugin.customMonsters.ToArray();
-            var spawnPool = new List<GameObject>(registered.Length * 4);
-            for (int i = 0; i < 4; i++)
-            {
-                spawnPool.AddRange(registered);
-            }
-
-            possibleSpawnsField.Value = spawnPool.ToArray();
+            traverse.Field<bool>("m_hasWeeping").Value = false;
+            possibleSpawnsField.Value = DbsContentApiPlugin.customMonsters.ToArray();
             ApiLog.Log("RoundSpawnerPatch: Modded mobs only: " + possibleSpawnsField.Value.Length);
         }
         else
         {
-            possibleSpawnsField.Value = possibleSpawnsField.Value.Concat(DbsContentApiPlugin.customMonsters).ToArray();
+            possibleSpawnsField.Value = DbsContentApiPlugin.customMonsters.Concat(possibleSpawnsField.Value).ToArray();
         }
     }
 }

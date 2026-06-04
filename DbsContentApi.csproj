@@ -4,7 +4,7 @@
     <AssemblyName>DbsContentApi</AssemblyName>
     <Product>DbsContentApi</Product>
     <!-- Change to whatever version you're currently on. -->
-    <Version>3.0.1</Version>
+    <Version>3.0.2</Version>
     <CWDir Condition=" '$(CWDir)' == '' ">C:\Program Files (x86)\Steam\steamapps\common\Content Warning</CWDir>
   </PropertyGroup>
 
