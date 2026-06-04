@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using BepInEx;
 using HarmonyLib;
 using UnityEngine;
 
@@ -9,25 +10,21 @@ namespace DbsContentApi;
 /// <summary>
 ///     Main plugin class for DbsContentApi.
 /// </summary>
-[ContentWarningPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_VERSION, false)]
-public class DbsContentApiPlugin
+[ContentWarningPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_VERSION, MyPluginInfo.VANILLA_COMPATIBLE)]
+[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+public class DbsContentApiPlugin : BaseUnityPlugin
 {
     private const string ApiAssetBundleFileName = "dbscontentapi";
 
     private bool _isPatched;
 
-    static DbsContentApiPlugin()
-    {
-        // Create new instance
-        Instance = new DbsContentApiPlugin();
-    }
-
     /// <summary>
-    ///     Constructor for the DbsContentApi plugin.
+    ///     Initializes DbsContentApi through BepInEx.
     /// </summary>
-    public DbsContentApiPlugin()
+    private void Awake()
     {
         LoadApiAssetBundle();
+        PatchAll();
         ApiLog.Log($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
     }
 
@@ -64,12 +61,7 @@ public class DbsContentApiPlugin
         }
     }
 
-    private Harmony? Harmony { get; set; }
-    /// <summary>
-    ///     Singleton instance of the DbsContentApi plugin.
-    /// </summary>
-    public static DbsContentApiPlugin Instance { get; }
-
+    private Harmony? _harmony;
     internal static List<GameObject> customMonsters = new();
     internal static List<CustomMap> customMaps = new();
     internal static Dictionary<string, CustomMap> customMapsById = new(StringComparer.OrdinalIgnoreCase);
@@ -130,12 +122,12 @@ public class DbsContentApiPlugin
 
         ApiLog.Log("Patching...");
 
-        Harmony ??= new Harmony(MyPluginInfo.PLUGIN_GUID);
+        _harmony ??= new Harmony(MyPluginInfo.PLUGIN_GUID);
 
         try
         {
             ApiLog.LogError("Patching...");
-            Harmony.PatchAll();
+            _harmony.PatchAll();
             _isPatched = true;
             ApiLog.Log("Patched!");
         }
@@ -160,7 +152,7 @@ public class DbsContentApiPlugin
 
         try
         {
-            Harmony?.UnpatchSelf();
+            _harmony?.UnpatchSelf();
             _isPatched = false;
             ApiLog.Log("Unpatched!");
         }
