@@ -421,6 +421,8 @@ public class CustomMapLoader : MonoBehaviour
         if (!pipeline.skipDiveBellTeleport)
             TeleportToSpawn(tmp, ctx);
 
+        RebootLocalPlayerAfterMapLoad();
+
         ApiLog.Log("[Maps] Waiting for all players to join...");
         while (PhotonNetwork.PlayerList.Length != PlayerHandler.instance.players.Count)
             yield return null;
@@ -790,6 +792,20 @@ public class CustomMapLoader : MonoBehaviour
             ApiLog.LogError("[Maps] Player.Teleport method not found!");
         else
             teleportMethod.Invoke(Player.localPlayer, new object[] { spawn.transform.position + Vector3.up * 4, spawn.transform.rotation * Vector3.forward });
+    }
+
+    private static void RebootLocalPlayerAfterMapLoad()
+    {
+        if (Player.localPlayer == null)
+        {
+            ApiLog.LogError("[Maps] Player.localPlayer not found; cannot reboot player after custom map load.");
+            return;
+        }
+
+        ApiLog.Log("[Maps] Rebooting local player after custom map load.");
+        DbsContentApi.Patches.RespawnPlayerAtPos.RebootLocalPlayerAt(
+            Player.localPlayer.transform.position,
+            Player.localPlayer.transform.rotation);
     }
 
     private static void StripMarkerVisuals(GameObject obj)
