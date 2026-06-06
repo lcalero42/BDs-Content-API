@@ -65,10 +65,10 @@ public class MapConfig
     public string patrolNameSeparator = "_";
 
     /// <summary>Group used when suffix is missing and <see cref="assignUnspecifiedToAllGroups"/> is false.</summary>
-    public PatrolPoint.PatrolGroup? defaultPatrolGroup;
+    public PatrolPoint.PatrolGroup? defaultPatrolGroup = PatrolPoint.PatrolGroup.Bear;
 
-    /// <summary>When true, markers without a group suffix are added to every patrol group (legacy behavior).</summary>
-    public bool assignUnspecifiedToAllGroups = true;
+    /// <summary>When true, markers without a group suffix are added to every patrol group.</summary>
+    public bool assignUnspecifiedToAllGroups = false;
 
     /// <summary>Include existing <see cref="PatrolPoint"/> components from the loaded scene.</summary>
     public bool respectScenePatrolPoints = true;
@@ -418,10 +418,11 @@ public class CustomMapLoader : MonoBehaviour
         if (pipeline.skipFinalize)
             yield break;
 
+        bool shouldRebootPlayer = false;
+        Vector3 playerSpawnPosition = Vector3.zero;
+        Quaternion playerSpawnRotation = Quaternion.identity;
         if (!pipeline.skipDiveBellTeleport)
-            TeleportToSpawn(tmp, ctx);
-
-        RebootLocalPlayerAfterMapLoad();
+            shouldRebootPlayer = TryTeleportToSpawn(tmp, ctx, out playerSpawnPosition, out playerSpawnRotation);
 
         ApiLog.Log("[Maps] Waiting for all players to join...");
         while (PhotonNetwork.PlayerList.Length != PlayerHandler.instance.players.Count)
@@ -432,6 +433,9 @@ public class CustomMapLoader : MonoBehaviour
         ApiLog.Log("[Maps] Map setup complete. Level is ready.");
         Level.currentLevel.levelIsReady = true;
         tmp.locked = false;
+
+        if (shouldRebootPlayer)
+            RebootLocalPlayerAfterMapLoad(playerSpawnPosition, playerSpawnRotation);
 
         MethodInfo? setupFinishedMethod = typeof(Level).GetMethod("SetupFinished", BindingFlags.Instance | BindingFlags.NonPublic);
         if (setupFinishedMethod == null)
@@ -778,34 +782,44 @@ public class CustomMapLoader : MonoBehaviour
         ambience.Play();
     }
 
-    private static void TeleportToSpawn(DivingBell tmp, MapLoadContext ctx)
+    private static bool TryTeleportToSpawn(
+        DivingBell tmp,
+        MapLoadContext ctx,
+        out Vector3 playerSpawnPosition,
+        out Quaternion playerSpawnRotation)
     {
+        playerSpawnPosition = Vector3.zero;
+        playerSpawnRotation = Quaternion.identity;
+
         if (ctx.DiveBellSpawns.Count == 0)
-            return;
+            return false;
+
         UnityEngine.Random.InitState(GameAPI.seed);
         GameObject spawn = ctx.DiveBellSpawns[UnityEngine.Random.Range(0, ctx.DiveBellSpawns.Count)];
+        playerSpawnPosition = spawn.transform.position + Vector3.up * 4;
+        playerSpawnRotation = spawn.transform.rotation;
+
         ApiLog.Log($"[Maps] Spawn: {spawn.name} at {spawn.transform.position}");
         tmp.transform.position = spawn.transform.position + Vector3.up;
-        tmp.transform.rotation = spawn.transform.rotation;
+        tmp.transform.rotation = playerSpawnRotation;
+
         MethodInfo? teleportMethod = typeof(Player).GetMethod("Teleport", BindingFlags.Instance | BindingFlags.NonPublic);
         if (teleportMethod == null)
             ApiLog.LogError("[Maps] Player.Teleport method not found!");
+        else if (Player.localPlayer == null)
+            ApiLog.LogError("[Maps] Player.localPlayer not found; cannot teleport player.");
         else
-            teleportMethod.Invoke(Player.localPlayer, new object[] { spawn.transform.position + Vector3.up * 4, spawn.transform.rotation * Vector3.forward });
+            teleportMethod.Invoke(Player.localPlayer, new object[] { playerSpawnPosition, playerSpawnRotation * Vector3.forward });
+
+        return true;
     }
 
-    private static void RebootLocalPlayerAfterMapLoad()
+    private static void RebootLocalPlayerAfterMapLoad(Vector3 position, Quaternion rotation)
     {
-        if (Player.localPlayer == null)
-        {
-            ApiLog.LogError("[Maps] Player.localPlayer not found; cannot reboot player after custom map load.");
-            return;
-        }
-
-        ApiLog.Log("[Maps] Rebooting local player after custom map load.");
+        ApiLog.Log($"[Maps] Rebooting local player after custom map load at {position}.");
         DbsContentApi.Patches.RespawnPlayerAtPos.RebootLocalPlayerAt(
-            Player.localPlayer.transform.position,
-            Player.localPlayer.transform.rotation);
+            position,
+            rotation);
     }
 
     private static void StripMarkerVisuals(GameObject obj)

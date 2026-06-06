@@ -68,6 +68,7 @@ public class DbsContentApiPlugin : BaseUnityPlugin
     internal static string? selectedCustomMapId;
     internal static string? forcedNextMapId;
     internal static List<Action> customItemsRegistrationCallbacks = new();
+    internal static List<Item> customArtifacts = new();
     internal static List<ContentEvent> customContentEvents = new();
 
     internal static bool moddedMobsOnly;

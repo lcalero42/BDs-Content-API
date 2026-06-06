@@ -16,6 +16,8 @@ internal class RespawnPlayerAtPos : MonoBehaviour
             return;
         }
 
+        ApiLog.Log("[Respawn] Rebooting local player at " + position + " with rotation " + rotation);
+
         RespawnPlayerAtPos player = PhotonGameLobbyHandler.Instance.gameObject.AddComponent<RespawnPlayerAtPos>();
         player.position = position;
         player.rotation = rotation;

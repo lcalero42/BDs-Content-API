@@ -5,6 +5,7 @@ using System;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
+using DefaultNamespace.ContentProviders;
 
 namespace DbsContentApi;
 
@@ -115,6 +116,62 @@ public class ItemConfig
 
     /// <summary>Key/tooltip entries shown in the item description UI.</summary>
     public List<ItemKeyTooltip> tooltips = new();
+}
+
+/// <summary>
+/// Configuration for a custom artifact passed to <see cref="Items.RegisterArtifact"/>.
+/// Artifacts are registered as world-spawned content items and are added to
+/// <see cref="RoundArtifactSpawner.possibleSpawns"/> automatically.
+/// </summary>
+public class ArtifactConfig : ItemConfig
+{
+    /// <summary>
+    /// Score value used when this artifact is recorded.
+    /// The game halves this value when the artifact is inactive or not held.
+    /// </summary>
+    public float contentValue = 50f;
+
+    /// <summary>
+    /// Localization key prefix used for generated artifact comments.
+    /// Defaults to <c>Content_{persistentId/displayName}_Artifact</c> with unsafe characters removed.
+    /// </summary>
+    public string? commentKeyPrefix = null;
+
+    /// <summary>
+    /// English comment text to register for this artifact.
+    /// Each entry becomes a generated localization key and is used by the artifact content event.
+    /// </summary>
+    public string[] comments = Array.Empty<string>();
+
+    /// <summary>
+    /// Pre-existing localization keys to use for comments.
+    /// Use this when comments are registered elsewhere or already exist in the game.
+    /// </summary>
+    public string[] commentKeys = Array.Empty<string>();
+
+    /// <summary>
+    /// Optional explicit content event ID. Leave null to allocate the next available ID.
+    /// </summary>
+    public ushort? contentId = null;
+
+    /// <summary>
+    /// Whether this artifact is eligible for round artifact spawning.
+    /// </summary>
+    public bool registerInRoundSpawns = true;
+
+    /// <summary>
+    /// Creates a custom artifact configuration with artifact-friendly defaults.
+    /// </summary>
+    public ArtifactConfig()
+    {
+        itemType = Item.ItemType.Artifact;
+        purchasable = false;
+        price = 0;
+        category = ShopItemCategory.Lights;
+        spawnable = true;
+        budgetCost = 3;
+        rarity = 1f;
+    }
 }
 
 /// <summary>
@@ -237,7 +294,9 @@ public static class Items
         {
             item.icon = config.icon;
         }
+#pragma warning disable CS0618
         else if (!string.IsNullOrEmpty(config.iconName))
+#pragma warning restore CS0618
         {
             ApiLog.LogWarning(
                 $"Item '{config.displayName}': config.iconName is obsolete. Load a Sprite and set config.icon before calling RegisterItem.");
@@ -286,6 +345,39 @@ public static class Items
     }
 
     /// <summary>
+    /// Registers a prefab as a custom artifact, including camera content value,
+    /// comment localization keys, and round artifact spawn registration.
+    /// </summary>
+    /// <param name="prefab">The artifact GameObject prefab.</param>
+    /// <param name="config">Artifact-specific item and content configuration.</param>
+    /// <returns>The registered artifact item.</returns>
+    public static Item RegisterArtifact(GameObject prefab, ArtifactConfig config)
+    {
+        if (prefab == null)
+            throw new ArgumentNullException(nameof(prefab));
+        if (config == null)
+            throw new ArgumentNullException(nameof(config));
+
+        config.itemType = Item.ItemType.Artifact;
+        config.purchasable = false;
+        config.price = 0;
+        config.spawnable = true;
+
+        EnsureArtifactContentProvider(prefab);
+
+        Item item = RegisterItem(prefab, config);
+        item.content = CreateArtifactContent(item, config);
+
+        if (config.registerInRoundSpawns)
+        {
+            RegisterArtifactSpawn(item);
+        }
+
+        ApiLog.Log($"Artifact '{item.displayName}' registered with content ID: {item.content.id}");
+        return item;
+    }
+
+    /// <summary>
     /// Sets up the icon for an item.
     /// </summary>
     /// <param name="bundle">The AssetBundle containing the icon.</param>
@@ -313,6 +405,106 @@ public static class Items
         ps.impactSounds = impactSounds;
     }
 
+    private static void EnsureArtifactContentProvider(GameObject prefab)
+    {
+        if (prefab.GetComponent<ArtifactContentProvider>() != null)
+        {
+            return;
+        }
+
+        prefab.AddComponent<ArtifactContentProvider>();
+        ApiLog.Log($"Added ArtifactContentProvider to {prefab.name}");
+    }
+
+    private static PropContent CreateArtifactContent(Item item, ArtifactConfig config)
+    {
+        string[] commentKeys = RegisterArtifactComments(item, config);
+        if (commentKeys.Length == 0)
+        {
+            ApiLog.LogWarning($"Artifact '{item.displayName}' has no comments configured.");
+        }
+
+        PropContent content = ScriptableObject.CreateInstance<PropContent>();
+        content.name = $"{item.name}.content";
+        content.isArtifact = true;
+        content.contentValue = config.contentValue;
+        content.id = config.contentId ?? GetNextContentId();
+        content.comments = commentKeys;
+        return content;
+    }
+
+    private static string[] RegisterArtifactComments(Item item, ArtifactConfig config)
+    {
+        List<string> keys = new List<string>();
+        if (config.commentKeys != null)
+        {
+            keys.AddRange(config.commentKeys.Where(key => !string.IsNullOrWhiteSpace(key)));
+        }
+
+        if (config.comments == null || config.comments.Length == 0)
+        {
+            return keys.Distinct().ToArray();
+        }
+
+        string prefix = string.IsNullOrWhiteSpace(config.commentKeyPrefix)
+            ? $"Content_{SanitizeCommentKey(item.name)}_Artifact"
+            : config.commentKeyPrefix!;
+
+        for (int i = 0; i < config.comments.Length; i++)
+        {
+            string comment = config.comments[i];
+            if (string.IsNullOrWhiteSpace(comment))
+            {
+                continue;
+            }
+
+            string key = $"{prefix}_{i}";
+            CustomCommentRegistry.Register(key, new CustomComment("en", comment));
+            keys.Add(key);
+        }
+
+        return keys.Distinct().ToArray();
+    }
+
+    private static string SanitizeCommentKey(string value)
+    {
+        char[] chars = value
+            .Where(c => char.IsLetterOrDigit(c) || c == '_')
+            .ToArray();
+        return chars.Length == 0 ? "Custom" : new string(chars);
+    }
+
+    private static ushort GetNextContentId()
+    {
+        ItemDatabase db = SingletonAsset<ItemDatabase>.Instance;
+        FieldInfo objectsField = GetObjectsField(db);
+        List<Item> currentItems = GetItemsFromField(objectsField, db);
+        ushort maxId = 0;
+
+        foreach (Item item in currentItems)
+        {
+            if (item?.content == null)
+            {
+                continue;
+            }
+
+            maxId = (ushort)Math.Max(maxId, item.content.id);
+        }
+
+        return (ushort)(maxId + 1);
+    }
+
+    private static void RegisterArtifactSpawn(Item item)
+    {
+        if (DbsContentApiPlugin.customArtifacts.Any(artifact => artifact != null && artifact.persistentID == item.persistentID))
+        {
+            return;
+        }
+
+        DbsContentApiPlugin.customArtifacts.Add(item);
+        ApiLog.Log($"Artifact '{item.displayName}' added to round artifact spawns.");
+    }
+
     /// <summary>
     /// Gets fallback physics sound from existing items.
     /// </summary>
@@ -336,7 +528,7 @@ public static class Items
         var objectsField = GetObjectsField(db);
         var currentItems = GetItemsFromField(objectsField, db);
 
-        SFX_Instance templateSFX = currentItems[0].itemObject.GetComponent<PhysicsSound>()?.impactSounds?[0];
+        SFX_Instance? templateSFX = currentItems[0].itemObject.GetComponent<PhysicsSound>()?.impactSounds?[0];
         if (templateSFX == null)
         {
             ApiLog.LogError("Could not find template SFX_Instance");
@@ -361,7 +553,7 @@ public static class Items
         var objectsField = GetObjectsField(db);
         var currentItems = GetItemsFromField(objectsField, db);
 
-        SFX_Instance templateSFX = currentItems[0].itemObject.GetComponent<PhysicsSound>()?.impactSounds?[0];
+        SFX_Instance? templateSFX = currentItems[0].itemObject.GetComponent<PhysicsSound>()?.impactSounds?[0];
         if (templateSFX == null)
         {
             ApiLog.LogError("Could not find template SFX_Instance");
