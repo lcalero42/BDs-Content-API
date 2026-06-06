@@ -3,12 +3,12 @@ using Photon.Pun;
 
 namespace DbsContentApi.Patches;
 
-internal class RespawnPlayerAtPos : MonoBehaviour
+public class RespawnPlayerAtPos : MonoBehaviour
 {
     internal Vector3 position = Vector3.zero;
     internal Quaternion rotation = Quaternion.identity;
 
-    internal static void RebootLocalPlayerAt(Vector3 position, Quaternion rotation)
+    public static void RebootLocalPlayerAt(Vector3 position, Quaternion rotation)
     {
         if (PhotonGameLobbyHandler.Instance == null)
         {
